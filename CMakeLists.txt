@@ -32,6 +32,8 @@ enable_testing()
 add_executable(
     testRunner
     ${UNIT_TESTS_DIR}/IntermediateNodeTests.cpp
+    ${UNIT_TESTS_DIR}/InterThreadTransmitterTest.cpp
+    ${UNIT_TESTS_DIR}/PrimaryNodeTests.cpp
 )
 target_link_libraries(
     testRunner
