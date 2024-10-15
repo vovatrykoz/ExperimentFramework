@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "IntermediateNode.h"
+#include "nodes/IntermediateNode.h"
 
 class MockReceiverAlwaysReceives : public IReceiver {
 public:

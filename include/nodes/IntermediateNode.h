@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "IReceiver.h"
-#include "ITransmitter.h"
+#include "receiver/IReceiver.h"
+#include "transmitter/ITransmitter.h"
 
 class IntermediateNode {
 private:
