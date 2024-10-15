@@ -32,13 +32,13 @@ public:
 
 class MockLogger : public ILogger {
 private:
-    std::vector<RoundTripTime> log;
+    std::vector<RoundTripInfo> log;
 
 public:
     virtual void LogRoundTripTimes(
-        std::vector<RoundTripTime> recordedTimes) override {
+        std::vector<RoundTripInfo> recordedTimes) override {
         this->log = recordedTimes;
     }
 
-    std::vector<RoundTripTime> GetLog() { return this->log; }
+    std::vector<RoundTripInfo> GetLog() { return this->log; }
 };

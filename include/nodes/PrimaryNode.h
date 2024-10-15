@@ -13,7 +13,7 @@ private:
     std::unique_ptr<ITransmitter> transmitter;
     std::unique_ptr<ILogger> logger;
 
-    std::vector<RoundTripTime> recordedTimes;
+    std::vector<RoundTripInfo> recordedTimes;
 
 public:
     PrimaryNode(std::unique_ptr<IReceiver> receiver,
