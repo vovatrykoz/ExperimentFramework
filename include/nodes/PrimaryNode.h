@@ -25,4 +25,8 @@ public:
     void LogResults();
 };
 
+inline void PrimaryNode::LogResults() {
+    this->logger->LogRoundTripTimes(this->recordedTimes);
+}
+
 #endif
