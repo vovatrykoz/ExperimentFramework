@@ -13,7 +13,8 @@ struct RoundTripInfo {
 
 class ILogger {
 public:
-    virtual void LogRoundTripTimes(std::vector<RoundTripInfo> recordedTimes) = 0;
+    virtual void LogRoundTripTimes(
+        std::vector<RoundTripInfo> recordedTimes) = 0;
 };
 
 #endif
