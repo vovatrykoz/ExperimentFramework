@@ -6,7 +6,7 @@
 class ITransmitter {
 public:
     ~ITransmitter() = default;
-    virtual void Transmit(ExperimentMessage) = 0;
+    virtual void Transmit(ExperimentMessage message) = 0;
 };
 
 #endif

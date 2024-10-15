@@ -1,4 +1,4 @@
-#include "IndermediateNode.h"
+#include "IntermediateNode.h"
 
 void IntermediateNode::Run() {
     std::optional<ExperimentMessage> messageContainer = this->receiver->Receive();

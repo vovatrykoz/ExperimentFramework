@@ -1,10 +1,19 @@
 cmake_minimum_required(VERSION 3.20)
 project(ExperimentFramework)
 
+include_directories(${PROJECT_SOURCE_DIR}/include/)
+
+add_library(
+    ExperimentLibrary
+    ${PROJECT_SOURCE_DIR}/source/IntermediateNode.cpp
+)
+
 add_executable(
     ExperimentRunner
     ${PROJECT_SOURCE_DIR}/source/main.cpp
 )
+
+target_link_libraries(ExperimentRunner ExperimentLibrary)
 
 set(UNIT_TESTS_DIR ${PROJECT_SOURCE_DIR}/tests)
 
@@ -25,6 +34,7 @@ add_executable(
 )
 target_link_libraries(
     testRunner
+    ExperimentLibrary
     GTest::gtest_main
 )
 
