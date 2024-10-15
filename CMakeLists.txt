@@ -6,6 +6,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include/)
 add_library(
     ExperimentLibrary
     ${PROJECT_SOURCE_DIR}/source/nodes/IntermediateNode.cpp
+    ${PROJECT_SOURCE_DIR}/source/nodes/PrimaryNode.cpp
 )
 
 add_executable(
