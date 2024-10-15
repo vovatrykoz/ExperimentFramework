@@ -18,10 +18,7 @@ private:
 public:
     PrimaryNode(std::unique_ptr<IReceiver> receiver,
                 std::unique_ptr<ITransmitter> transmitter,
-                std::unique_ptr<ILogger> logger)
-        : receiver(std::move(receiver)),
-          transmitter(std::move(transmitter)),
-          logger(std::move(logger)) {}
+                std::unique_ptr<ILogger> logger);
 
     void Transmit(uint32_t numberOfMessages);
     void Receive();

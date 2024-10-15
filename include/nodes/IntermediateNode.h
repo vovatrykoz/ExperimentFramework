@@ -13,8 +13,7 @@ private:
 
 public:
     IntermediateNode(std::unique_ptr<IReceiver> receiver,
-                     std::unique_ptr<ITransmitter> transmitter)
-        : receiver(std::move(receiver)), transmitter(std::move(transmitter)) {}
+                     std::unique_ptr<ITransmitter> transmitter);
 
     void Run();
 };

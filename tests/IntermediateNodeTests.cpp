@@ -57,7 +57,8 @@ TEST(IntermediateNodeTest, IntermediateNodeTransmitsMessageOnReceive) {
     ASSERT_EQ(expectedTransmissionStatus, actualTransmitStatus);
 }
 
-TEST(IntermediateNodeTest, IntermediateNodeTransmitsMessageIfNothingHasBeenReceivedReceive) {
+TEST(IntermediateNodeTest,
+     IntermediateNodeTransmitsMessageIfNothingHasBeenReceivedReceive) {
     bool actualTransmitStatus = false;
 
     auto setTransmittedStatusValueToTrue = [&actualTransmitStatus]() {
@@ -78,4 +79,30 @@ TEST(IntermediateNodeTest, IntermediateNodeTransmitsMessageIfNothingHasBeenRecei
     bool expectedTransmissionStatus = false;
 
     ASSERT_EQ(expectedTransmissionStatus, actualTransmitStatus);
+}
+
+TEST(IntermediateNodeTest,
+     IntermediateNodeThrowsExceptionIfNoReceiverIsProvided) {
+    bool actualTransmitStatus = false;
+
+    auto setTransmittedStatusValueToTrue = [&actualTransmitStatus]() {
+        actualTransmitStatus = true;
+    };
+
+    auto getTransmittedStatusValue = [&actualTransmitStatus]() {
+        return actualTransmitStatus;
+    };
+
+    ASSERT_THROW(
+        IntermediateNode node(nullptr, std::make_unique<MockTransmitter>(
+                                           getTransmittedStatusValue,
+                                           setTransmittedStatusValueToTrue)),
+        std::invalid_argument);
+}
+
+TEST(IntermediateNodeTest,
+     IntermediateNodeThrowsExceptionIfNoTransmitterIsProvided) {
+    ASSERT_THROW(IntermediateNode node(
+                     std::make_unique<MockReceiverNeverReceives>(), nullptr),
+                 std::invalid_argument);
 }
