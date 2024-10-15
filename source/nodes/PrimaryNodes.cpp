@@ -1,5 +1,5 @@
 #include "PrimaryNodes.h"
 
-void PrimaryNode::Transmit() {}
+void PrimaryNode::Transmit(int numberOfMessages) {}
 
 void PrimaryNode::Receive() {}

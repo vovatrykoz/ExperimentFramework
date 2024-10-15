@@ -16,7 +16,7 @@ public:
                 std::unique_ptr<ITransmitter> transmitter)
         : receiver(std::move(receiver)), transmitter(std::move(transmitter)) {}
 
-    void Transmit();
+    void Transmit(int numberOfMessages);
     void Receive();
 };
 
