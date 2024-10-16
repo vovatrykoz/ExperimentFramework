@@ -1,13 +1,11 @@
-#include <logger/ConsoleLogger.h>
-#include <termios.h>
-#include <time/ChronoTimeSerice.h>
-
 #include <atomic>
 #include <csignal>
 #include <iostream>
 #include <string>
 #include <thread>
 
+#include "logger/ConsoleLogger.h"
+#include "time/ChronoTimeSerice.h"
 #include "nodes/PrimaryNode.h"
 #include "receiver/SocketReceiver.h"
 #include "transmitter/SocketTransmitter.h"
@@ -25,7 +23,7 @@ int main(void) {
     std::cout << "Starting setup..." << std::endl;
 
     auto receiver = std::make_unique<SocketReceiver>("127.0.0.1", 8080);
-    auto transmitter = std::make_unique<SocketTransmitter>("127.0.0.1", 8080);
+    auto transmitter = std::make_unique<SocketTransmitter>("127.0.0.1", 8081);
     auto logger = std::make_unique<ConsoleLogger>();
     auto timeService = std::make_unique<ChronoTimeService>();
 

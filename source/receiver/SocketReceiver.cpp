@@ -3,10 +3,22 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 SocketReceiver::SocketReceiver(const std::string& ipAddr, uint16_t port) {
     this->socketDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (this->socketDescriptor < 0) {
+        throw SocketReceiverException("Could not create a socket receiver");
+    }
+
+    int flags = fcntl(this->socketDescriptor, F_GETFL, 0);
+    if (flags < 0) {
+        close(this->socketDescriptor);
+        throw SocketReceiverException("Could not create a socket receiver");
+    }
+
+    if (fcntl(this->socketDescriptor, F_SETFL, flags | O_NONBLOCK) < 0) {
+        close(this->socketDescriptor);
         throw SocketReceiverException("Could not create a socket receiver");
     }
 
@@ -22,6 +34,7 @@ SocketReceiver::SocketReceiver(const std::string& ipAddr, uint16_t port) {
              sizeof(this->transmitterAddr));
 
     if (bindResult < 0) {
+        close(this->socketDescriptor);
         throw SocketReceiverException("Could not create a socket receiver");
     }
 }

@@ -24,7 +24,14 @@ add_executable(
     ${PROJECT_SOURCE_DIR}/source/transmitterMain.cpp
 )
 
+add_executable(
+    ReceiverRunner
+    ${PROJECT_SOURCE_DIR}/source/receiverMain.cpp
+)
+
 target_link_libraries(TransmitterRunner ExperimentLibrary)
+target_link_libraries(ReceiverRunner ExperimentLibrary)
+
 set(UNIT_TESTS_DIR ${PROJECT_SOURCE_DIR}/tests)
 
 include(FetchContent)
