@@ -17,6 +17,7 @@ void signalHandler(int signum) {
 
 void mainLoop(IntermediateNode& node) {
     while(running) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         node.Run();
     }
 }
@@ -33,9 +34,9 @@ int main(void) {
 
     std::cout << "Setup done!" << std::endl;
 
-    while(running) {
-        node.Run();
-    }
+    std::thread receiverThread(mainLoop, std::ref(node));
+
+    receiverThread.join();
 
     std::cout << "Starting cleanup..." << std::endl;
     std::cout << "Cleanup done!" << std::endl;

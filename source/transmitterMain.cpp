@@ -17,6 +17,12 @@ void signalHandler(int signum) {
     running = false;
 }
 
+void receiverLoop(PrimaryNode& node) {
+    while(running) {
+        node.Receive();
+    }
+}
+
 int main(void) {
     std::signal(SIGINT, signalHandler);
 
@@ -30,10 +36,35 @@ int main(void) {
     PrimaryNode node(std::move(receiver), std::move(transmitter),
                      std::move(logger), std::move(timeService));
 
+
     std::cout << "Setup done!" << std::endl;
 
-    node.Transmit(10);
+    int numberOfMessages = -1;
+
+    while(numberOfMessages < 0) {
+        std::cout << "How many messages to send: ";
+        std::cin >> numberOfMessages;
+
+        if (std::cin.fail()) {
+            std::cout << "Invalid input! The input is not an integer." << std::endl;
+        } else {
+            break;
+        }
+    }
+
+    std::cout << std::unitbuf;
+    std::cout << "Sending " << numberOfMessages << " messages" << std::endl;
+
+    node.Transmit(numberOfMessages);
+    std::thread receiverThread(receiverLoop, std::ref(node));
+
+    std::cout << "Sent!" << std::endl;
+
+    receiverThread.join();
+
+    std::cout << "Experiment results: " << std::endl;
     node.LogResults();
+    std::cout << std::endl;
 
     std::cout << "Starting cleanup..." << std::endl;
     std::cout << "Cleanup done!" << std::endl;

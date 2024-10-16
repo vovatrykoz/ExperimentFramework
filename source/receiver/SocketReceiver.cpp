@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include <iostream>
+
 SocketReceiver::SocketReceiver(const std::string& ipAddr, uint16_t port) {
     this->socketDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (this->socketDescriptor < 0) {
@@ -52,6 +54,6 @@ std::optional<ExperimentMessage> SocketReceiver::Receive() {
     if (recvLen < 0) {
         return std::nullopt;
     }
-
+    
     return ntohl(messageInNetworkOrder);
 }

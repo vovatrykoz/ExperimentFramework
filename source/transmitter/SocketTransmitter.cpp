@@ -27,7 +27,7 @@ SocketTransmitter::~SocketTransmitter() { close(this->socketDescriptor); }
 
 void SocketTransmitter::Transmit(ExperimentMessage message) {
     int32_t messageInNetworkOrder = htonl(message);
-    sendto(this->socketDescriptor, &messageInNetworkOrder,
+    int res = sendto(this->socketDescriptor, &messageInNetworkOrder,
            sizeof(messageInNetworkOrder), 0,
            (struct sockaddr*)&(this->transmittionAddr),
            sizeof(this->transmittionAddr));
