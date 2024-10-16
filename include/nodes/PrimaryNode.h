@@ -1,6 +1,7 @@
 #ifndef _PRIMARY_NODE_H_
 #define _PRIMARY_NODE_H_
 
+#include <list>
 #include <memory>
 
 #include "logger/ILogger.h"
@@ -13,7 +14,7 @@ private:
     std::unique_ptr<ITransmitter> transmitter;
     std::unique_ptr<ILogger> logger;
 
-    std::vector<RoundTripInfo> recordedTimes;
+    std::list<RoundTripInfo> recordedTimes;
 
 public:
     PrimaryNode(std::unique_ptr<IReceiver> receiver,

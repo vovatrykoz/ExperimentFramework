@@ -33,14 +33,14 @@ public:
 
 class MockLogger : public ILogger {
 private:
-    std::function<void(const std::vector<RoundTripInfo>&)> log;
+    std::function<void(const std::list<RoundTripInfo>&)> log;
 
 public:
-    MockLogger() : log([](const std::vector<RoundTripInfo>&) {}) {}
-    MockLogger(std::function<void(const std::vector<RoundTripInfo>&)> log) : log(log) {}
+    MockLogger() : log([](const std::list<RoundTripInfo>&) {}) {}
+    MockLogger(std::function<void(const std::list<RoundTripInfo>&)> log) : log(log) {}
 
     virtual void LogRoundTripTimes(
-        const std::vector<RoundTripInfo>& recordedTimes) override {
+        const std::list<RoundTripInfo>& recordedTimes) override {
         this->log(recordedTimes);
     }
 };
@@ -142,7 +142,7 @@ TEST(PrimaryNodeTest, AllReceivedMessagesAreLogged) {
         return result;
     };
 
-    auto loggingFunc = [&actualLoggedMessages](const std::vector<RoundTripInfo>& timesToLog) {
+    auto loggingFunc = [&actualLoggedMessages](const std::list<RoundTripInfo>& timesToLog) {
         for(const auto& logItem : timesToLog) {
             actualLoggedMessages.push_back(logItem);
         }
@@ -179,7 +179,7 @@ TEST(PrimaryNodeTest, NotingIsLoggedIfWeDoNotReceiveMessages) {
         return std::nullopt;
     };
 
-    auto loggingFunc = [&actualLoggedMessages](const std::vector<RoundTripInfo>& timesToLog) {
+    auto loggingFunc = [&actualLoggedMessages](const std::list<RoundTripInfo>& timesToLog) {
         for(const auto& logItem : timesToLog) {
             actualLoggedMessages.push_back(logItem);
         }
