@@ -1,7 +1,7 @@
 #include "transmitter/InterThreadTransmitter.h"
 
 void InterThreadTransmitter::Transmit(ExperimentMessage message) {
-    if(messageQueue == nullptr) {
+    if(this->messageQueue == nullptr) {
         return;
     }
 
