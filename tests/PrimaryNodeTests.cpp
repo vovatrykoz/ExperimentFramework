@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <functional>
+#include <queue>
 
 #include "nodes/PrimaryNode.h"
 
@@ -37,7 +38,8 @@ private:
 
 public:
     MockLogger() : log([](const std::list<RoundTripInfo>&) {}) {}
-    MockLogger(std::function<void(const std::list<RoundTripInfo>&)> log) : log(log) {}
+    MockLogger(std::function<void(const std::list<RoundTripInfo>&)> log)
+        : log(log) {}
 
     virtual void LogRoundTripTimes(
         const std::list<RoundTripInfo>& recordedTimes) override {
@@ -45,27 +47,51 @@ public:
     }
 };
 
+class MockTimeService : public ITimeService {
+private:
+    std::function<std::time_t()> time;
+
+public:
+    MockTimeService(std::function<std::time_t()> time) : time(time) {}
+
+    virtual std::time_t GetCurrentTime() override { return this->time(); }
+};
+
 TEST(PrimaryNodeTest, ThrowsExceptionIfNoReceiverIsProvided) {
-    ASSERT_THROW(PrimaryNode node(nullptr,
-                                  std::make_unique<MockTransmitterTransmitFunc>(
-                                      [](ExperimentMessage msg) {}),
-                                  std::make_unique<MockLogger>()),
-                 std::invalid_argument);
+    ASSERT_THROW(
+        PrimaryNode node(nullptr,
+                         std::make_unique<MockTransmitterTransmitFunc>(
+                             [](ExperimentMessage msg) {}),
+                         std::make_unique<MockLogger>(),
+                         std::make_unique<MockTimeService>([]() { return 0; })),
+        std::invalid_argument);
 }
 
 TEST(PrimaryNodeTest, ThrowsExceptionIfNoTransmitterIsProvided) {
-    ASSERT_THROW(PrimaryNode node(std::make_unique<MockReceiverReceiveFunc>(
-                                      []() { return 0; }),
-                                  nullptr, std::make_unique<MockLogger>()),
-                 std::invalid_argument);
+    ASSERT_THROW(
+        PrimaryNode node(
+            std::make_unique<MockReceiverReceiveFunc>([]() { return 0; }),
+            nullptr, std::make_unique<MockLogger>(),
+            std::make_unique<MockTimeService>([]() { return 0; })),
+        std::invalid_argument);
 }
 
 TEST(PrimaryNodeTest, ThrowsExceptionIfNoLoggerIsProvided) {
+    ASSERT_THROW(
+        PrimaryNode node(
+            std::make_unique<MockReceiverReceiveFunc>([]() { return 0; }),
+            std::make_unique<MockTransmitterTransmitFunc>(
+                [](ExperimentMessage msg) {}),
+            nullptr, std::make_unique<MockTimeService>([]() { return 0; })),
+        std::invalid_argument);
+}
+
+TEST(PrimaryNodeTest, ThrowsExceptionIfNoTimeServiceIsProvided) {
     ASSERT_THROW(PrimaryNode node(std::make_unique<MockReceiverReceiveFunc>(
                                       []() { return 0; }),
                                   std::make_unique<MockTransmitterTransmitFunc>(
                                       [](ExperimentMessage msg) {}),
-                                  nullptr),
+                                  std::make_unique<MockLogger>(), nullptr),
                  std::invalid_argument);
 }
 
@@ -83,9 +109,11 @@ TEST(PrimaryNodeTest, CanTransmitSeveralMessages) {
     auto mockTransmitter =
         std::make_unique<MockTransmitterTransmitFunc>(transmitFunc);
     auto mockLogger = std::make_unique<MockLogger>();
+    auto mockTimeService =
+        std::make_unique<MockTimeService>([]() { return 0; });
 
     PrimaryNode node(std::move(mockReceiver), std::move(mockTransmitter),
-                     std::move(mockLogger));
+                     std::move(mockLogger), std::move(mockTimeService));
 
     node.Transmit(numberOfMessagesToTransmit);
 
@@ -115,14 +143,18 @@ TEST(PrimaryNodeTest, CanReceiveSeveralMessages) {
     auto mockTransmitter = std::make_unique<MockTransmitterTransmitFunc>(
         [](ExperimentMessage msg) {});
     auto mockLogger = std::make_unique<MockLogger>();
+    auto mockTimeService =
+        std::make_unique<MockTimeService>([]() { return 0; });
 
     PrimaryNode node(std::move(mockReceiver), std::move(mockTransmitter),
-                     std::move(mockLogger));
+                     std::move(mockLogger), std::move(mockTimeService));
 
     std::vector<ExperimentMessage> expectedReceivedMessages;
     for (int i = 0; i < numberOfMessagesToReceive; i++) {
         expectedReceivedMessages.push_back(i);
     }
+
+    node.Transmit(numberOfMessagesToReceive);
 
     for (int i = 0; i < numberOfMessagesToReceive; i++) {
         node.Receive();
@@ -136,29 +168,30 @@ TEST(PrimaryNodeTest, AllReceivedMessagesAreLogged) {
     int numberOfMessagesToReceive = 30;
     int currentMessage = 0;
 
-    auto receiveFunc = [&currentMessage]() {
-        ExperimentMessage result = currentMessage;
-        currentMessage++;
-        return result;
-    };
+    auto receiveFunc = [&currentMessage]() { return currentMessage++; };
 
-    auto loggingFunc = [&actualLoggedMessages](const std::list<RoundTripInfo>& timesToLog) {
-        for(const auto& logItem : timesToLog) {
-            actualLoggedMessages.push_back(logItem);
-        }
-    };
+    auto loggingFunc =
+        [&actualLoggedMessages](const std::list<RoundTripInfo>& timesToLog) {
+            for (const auto& logItem : timesToLog) {
+                actualLoggedMessages.push_back(logItem);
+            }
+        };
 
     auto mockReceiver = std::make_unique<MockReceiverReceiveFunc>(receiveFunc);
     auto mockTransmitter = std::make_unique<MockTransmitterTransmitFunc>(
         [](ExperimentMessage msg) {});
     auto mockLogger = std::make_unique<MockLogger>(loggingFunc);
+    auto mockTimeService =
+        std::make_unique<MockTimeService>([]() { return 0; });
 
     PrimaryNode node(std::move(mockReceiver), std::move(mockTransmitter),
-                     std::move(mockLogger));
+                     std::move(mockLogger), std::move(mockTimeService));
+
+    node.Transmit(numberOfMessagesToReceive);
 
     std::vector<RoundTripInfo> expectedLoggedMessages;
     for (int i = 0; i < numberOfMessagesToReceive; i++) {
-        expectedLoggedMessages.push_back(RoundTripInfo{i, i});
+        expectedLoggedMessages.push_back(RoundTripInfo{i, 0});
     }
 
     for (int i = 0; i < numberOfMessagesToReceive; i++) {
@@ -175,23 +208,24 @@ TEST(PrimaryNodeTest, NotingIsLoggedIfWeDoNotReceiveMessages) {
     int numberOfMessagesToReceive = 30;
     int currentMessage = 0;
 
-    auto receiveFunc = [&currentMessage]() {
-        return std::nullopt;
-    };
+    auto receiveFunc = [&currentMessage]() { return std::nullopt; };
 
-    auto loggingFunc = [&actualLoggedMessages](const std::list<RoundTripInfo>& timesToLog) {
-        for(const auto& logItem : timesToLog) {
-            actualLoggedMessages.push_back(logItem);
-        }
-    };
+    auto loggingFunc =
+        [&actualLoggedMessages](const std::list<RoundTripInfo>& timesToLog) {
+            for (const auto& logItem : timesToLog) {
+                actualLoggedMessages.push_back(logItem);
+            }
+        };
 
     auto mockReceiver = std::make_unique<MockReceiverReceiveFunc>(receiveFunc);
     auto mockTransmitter = std::make_unique<MockTransmitterTransmitFunc>(
         [](ExperimentMessage msg) {});
     auto mockLogger = std::make_unique<MockLogger>(loggingFunc);
+    auto mockTimeService =
+        std::make_unique<MockTimeService>([]() { return 0; });
 
     PrimaryNode node(std::move(mockReceiver), std::move(mockTransmitter),
-                     std::move(mockLogger));
+                     std::move(mockLogger), std::move(mockTimeService));
 
     for (int i = 0; i < numberOfMessagesToReceive; i++) {
         node.Receive();
@@ -200,4 +234,57 @@ TEST(PrimaryNodeTest, NotingIsLoggedIfWeDoNotReceiveMessages) {
     node.LogResults();
 
     ASSERT_TRUE(actualLoggedMessages.empty());
+}
+
+TEST(PrimaryNodeTest, RoundTripTimeForMessagesIsRecorded) {
+    std::vector<RoundTripInfo> actualLoggedMessages;
+    std::queue<ExperimentMessage> messageQueue;
+    int numberOfMessagesToTransmitAndReceive = 30;
+    int currentMessage = 0;
+    int currentTime = 0;
+
+    auto transmitFunc = [&messageQueue, &currentTime](ExperimentMessage msg) {
+        messageQueue.push(msg);
+        currentTime++;
+    };
+
+    auto receiveFunc = [&messageQueue, &currentTime]() {
+        ExperimentMessage msg = messageQueue.front();
+        messageQueue.pop();
+        currentTime++;
+        return msg;
+    };
+
+    auto loggingFunc =
+        [&actualLoggedMessages](const std::list<RoundTripInfo>& timesToLog) {
+            for (const auto& logItem : timesToLog) {
+                actualLoggedMessages.push_back(logItem);
+            }
+        };
+
+    auto timeFunc = [&currentTime]() { return currentTime; };
+
+    auto mockReceiver = std::make_unique<MockReceiverReceiveFunc>(receiveFunc);
+    auto mockTransmitter = std::make_unique<MockTransmitterTransmitFunc>(transmitFunc);
+    auto mockLogger = std::make_unique<MockLogger>(loggingFunc);
+    auto mockTimeService = std::make_unique<MockTimeService>(timeFunc);
+
+    PrimaryNode node(std::move(mockReceiver), std::move(mockTransmitter),
+                     std::move(mockLogger), std::move(mockTimeService));
+
+    std::vector<RoundTripInfo> expectedLoggedMessages;
+    for (int i = 0; i < numberOfMessagesToTransmitAndReceive; i++) {
+        expectedLoggedMessages.push_back(
+            RoundTripInfo{i, i + numberOfMessagesToTransmitAndReceive});
+    }
+
+    node.Transmit(numberOfMessagesToTransmitAndReceive);
+
+    for (int i = 0; i < numberOfMessagesToTransmitAndReceive; i++) {
+        node.Receive();
+    }
+
+    node.LogResults();
+
+    ASSERT_EQ(expectedLoggedMessages, actualLoggedMessages);
 }
