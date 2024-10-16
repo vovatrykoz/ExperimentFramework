@@ -10,12 +10,12 @@ void ThreadSafeQueue::Pop() {
     this->queue.pop();
 }
 
-size_t ThreadSafeQueue::Size() {
+size_t ThreadSafeQueue::Size() const {
     std::lock_guard<std::mutex> lock(this->queueMutex);
     return this->queue.size();
 }
 
-bool ThreadSafeQueue::IsEmpty() {
+bool ThreadSafeQueue::IsEmpty() const {
     std::lock_guard<std::mutex> lock(this->queueMutex);
     return this->queue.empty();
 }

@@ -9,12 +9,12 @@
 class ThreadSafeQueue {
 private:
     std::queue<ExperimentMessage> queue;
-    std::mutex queueMutex;
+    mutable std::mutex queueMutex;
 public:
     void Push(ExperimentMessage message);
     void Pop();
-    size_t Size();
-    bool IsEmpty();
+    size_t Size() const;
+    bool IsEmpty() const;
 };
 
 #endif
