@@ -15,11 +15,17 @@ add_library(
 )
 
 add_executable(
-    ExperimentRunner
-    ${PROJECT_SOURCE_DIR}/source/main.cpp
+    ReceiverRunner
+    ${PROJECT_SOURCE_DIR}/source/receiver.cpp
 )
 
-target_link_libraries(ExperimentRunner ExperimentLibrary)
+add_executable(
+    TransmitterRunner
+    ${PROJECT_SOURCE_DIR}/source/transmitter.cpp
+)
+
+target_link_libraries(ReceiverRunner ExperimentLibrary)
+target_link_libraries(TransmitterRunner ExperimentLibrary)
 
 set(UNIT_TESTS_DIR ${PROJECT_SOURCE_DIR}/tests)
 

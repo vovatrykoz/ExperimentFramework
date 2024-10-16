@@ -1,12 +1,23 @@
+#include <atomic>
+#include <csignal>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <string>
 
 #include "queue/ThreadSafeQueue.h"
 
+std::atomic<bool> running(true);
+
+void signalHandler(int signum) {
+    std::cout << std::endl << "Shutting down the receiver" << std::endl;
+    running = false;
+}
+
 int main(void) {
+    std::signal(SIGINT, signalHandler);
+
     std::cout << "Starting setup..." << std::endl;
 
     ThreadSafeQueue messageQueue;
@@ -24,16 +35,20 @@ int main(void) {
     }
 
     std::ofstream addressFile(pathToMailboxAddrFile, std::ios::binary);
-    if(!addressFile) {
-        std::cerr << "Could not create binary file for mailbox address writing" << std::endl;
+    if (!addressFile) {
+        std::cerr << "Could not create binary file for mailbox address writing"
+                  << std::endl;
         return -1;
     }
 
     ThreadSafeQueue* mailboxAddress = &messageQueue;
-    addressFile.write(reinterpret_cast<char*>(mailboxAddress), sizeof(mailboxAddress));
+    addressFile.write(reinterpret_cast<char*>(mailboxAddress),
+                      sizeof(mailboxAddress));
     addressFile.close();
 
     std::cout << "Setup done!" << std::endl;
+
+    while (running) {}
 
     std::cout << "Starting cleanup..." << std::endl;
 
@@ -45,7 +60,7 @@ int main(void) {
     std::error_code ec;
     std::filesystem::remove_all(tempDirPath, ec);
 
-    if(ec) {
+    if (ec) {
         std::cerr << "Error: " << ec.message() << std::endl;
         return -1;
     }
