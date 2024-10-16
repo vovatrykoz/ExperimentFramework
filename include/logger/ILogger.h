@@ -17,6 +17,7 @@ struct RoundTripInfo {
 
 class ILogger {
 public:
+    virtual ~ILogger() = 0;
     virtual void LogRoundTripTimes(
         const std::list<RoundTripInfo>& recordedTimes) = 0;
 };

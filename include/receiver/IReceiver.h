@@ -7,7 +7,7 @@
 
 class IReceiver {
 public:
-    ~IReceiver() = default;
+    virtual ~IReceiver() = default;
     virtual std::optional<ExperimentMessage> Receive() = 0;
 };
 

@@ -5,7 +5,7 @@
 
 class ITimeService {
 public:
-    ~ITimeService() = default;
+    virtual ~ITimeService() = default;
     virtual std::time_t GetCurrentTime() = 0;
 };
 
