@@ -12,21 +12,16 @@ add_library(
     ${PROJECT_SOURCE_DIR}/source/nodes/IntermediateNode.cpp
     ${PROJECT_SOURCE_DIR}/source/nodes/PrimaryNode.cpp
     ${PROJECT_SOURCE_DIR}/source/queue/ThreadSafeQueue.cpp
+    ${PROJECT_SOURCE_DIR}/source/receiver/InterThreadReceiver.cpp
+    ${PROJECT_SOURCE_DIR}/source/transmitter/InterThreadTransmitter.cpp
 )
 
 add_executable(
-    ReceiverRunner
-    ${PROJECT_SOURCE_DIR}/source/receiver.cpp
+    FrameworkRunner
+    ${PROJECT_SOURCE_DIR}/source/main.cpp
 )
 
-add_executable(
-    TransmitterRunner
-    ${PROJECT_SOURCE_DIR}/source/transmitter.cpp
-)
-
-target_link_libraries(ReceiverRunner ExperimentLibrary)
-target_link_libraries(TransmitterRunner ExperimentLibrary)
-
+target_link_libraries(FrameworkRunner ExperimentLibrary)
 set(UNIT_TESTS_DIR ${PROJECT_SOURCE_DIR}/tests)
 
 include(FetchContent)
