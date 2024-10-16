@@ -11,6 +11,7 @@ add_library(
     ExperimentLibrary
     ${PROJECT_SOURCE_DIR}/source/nodes/IntermediateNode.cpp
     ${PROJECT_SOURCE_DIR}/source/nodes/PrimaryNode.cpp
+    ${PROJECT_SOURCE_DIR}/source/queue/ThreadSafeQueue.cpp
 )
 
 add_executable(
@@ -38,6 +39,7 @@ add_executable(
     ${UNIT_TESTS_DIR}/IntermediateNodeTests.cpp
     ${UNIT_TESTS_DIR}/InterThreadTransmitterTest.cpp
     ${UNIT_TESTS_DIR}/PrimaryNodeTests.cpp
+    ${UNIT_TESTS_DIR}/ThreadsafeQueueTests.cpp
 )
 target_link_libraries(
     testRunner

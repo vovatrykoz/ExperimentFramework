@@ -5,9 +5,21 @@ void ThreadSafeQueue::Push(ExperimentMessage message) {
     this->queue.push(message);
 }
 
-void ThreadSafeQueue::Pop() {
-    std::lock_guard<std::mutex> lock(this->queueMutex);
-    this->queue.pop();
+std::optional<ExperimentMessage> ThreadSafeQueue::Pop() {
+    std::optional<ExperimentMessage> result = std::nullopt;
+
+    {
+        std::lock_guard<std::mutex> lock(this->queueMutex);
+
+        if (this->queue.empty()) {
+            return result;
+        }
+
+        result = this->queue.front();
+        this->queue.pop();
+    }
+
+    return result;
 }
 
 size_t ThreadSafeQueue::Size() const {

@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <queue>
+#include <optional>
 
 #include "ExperimentMessage.h"
 
@@ -12,7 +13,7 @@ private:
     mutable std::mutex queueMutex;
 public:
     void Push(ExperimentMessage message);
-    void Pop();
+    std::optional<ExperimentMessage> Pop();
     size_t Size() const;
     bool IsEmpty() const;
 };
