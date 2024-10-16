@@ -9,12 +9,16 @@ typedef int MessageId;
 struct RoundTripInfo {
     MessageId id;
     std::time_t roundTripTime;
+
+    bool operator==(const RoundTripInfo& other) const {
+        return id == other.id;
+    }
 };
 
 class ILogger {
 public:
     virtual void LogRoundTripTimes(
-        std::vector<RoundTripInfo> recordedTimes) = 0;
+        const std::vector<RoundTripInfo>& recordedTimes) = 0;
 };
 
 #endif

@@ -25,6 +25,19 @@ PrimaryNode::PrimaryNode(std::unique_ptr<IReceiver> receiver,
     this->logger = std::move(logger);
 }
 
-void PrimaryNode::Transmit(uint32_t numberOfMessages) {}
+void PrimaryNode::Transmit(uint32_t numberOfMessages) {
+    for(uint32_t i = 0; i < numberOfMessages; i++) {
+        this->transmitter->Transmit(i);
+    }
+}
 
-void PrimaryNode::Receive() {}
+void PrimaryNode::Receive() {
+    std::optional<ExperimentMessage> resultContainer = this->receiver->Receive();
+
+    if(!resultContainer.has_value()) {
+        return;
+    }
+
+    ExperimentMessage result = resultContainer.value();
+    this->recordedTimes.push_back({result, result});
+}
