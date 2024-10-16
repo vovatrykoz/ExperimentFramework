@@ -9,6 +9,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include/)
 
 add_library(
     ExperimentLibrary
+    ${PROJECT_SOURCE_DIR}/source/logger/ConsoleLogger.cpp
     ${PROJECT_SOURCE_DIR}/source/nodes/IntermediateNode.cpp
     ${PROJECT_SOURCE_DIR}/source/nodes/PrimaryNode.cpp
     ${PROJECT_SOURCE_DIR}/source/queue/ThreadSafeQueue.cpp
@@ -19,11 +20,11 @@ add_library(
 )
 
 add_executable(
-    FrameworkRunner
-    ${PROJECT_SOURCE_DIR}/source/main.cpp
+    TransmitterRunner
+    ${PROJECT_SOURCE_DIR}/source/transmitterMain.cpp
 )
 
-target_link_libraries(FrameworkRunner ExperimentLibrary)
+target_link_libraries(TransmitterRunner ExperimentLibrary)
 set(UNIT_TESTS_DIR ${PROJECT_SOURCE_DIR}/tests)
 
 include(FetchContent)

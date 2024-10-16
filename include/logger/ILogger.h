@@ -2,7 +2,7 @@
 #define _I_LOGGER_H_
 
 #include <chrono>
-#include <vector>
+#include <list>
 
 typedef int MessageId;
 

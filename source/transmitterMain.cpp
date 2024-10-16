@@ -1,4 +1,6 @@
+#include <logger/ConsoleLogger.h>
 #include <termios.h>
+#include <time/ChronoTimeSerice.h>
 
 #include <atomic>
 #include <csignal>
@@ -6,6 +8,7 @@
 #include <string>
 #include <thread>
 
+#include "nodes/PrimaryNode.h"
 #include "receiver/SocketReceiver.h"
 #include "transmitter/SocketTransmitter.h"
 
@@ -21,21 +24,18 @@ int main(void) {
 
     std::cout << "Starting setup..." << std::endl;
 
-    SocketTransmitter transmitter("127.0.0.1", 8080);
-    SocketReceiver receiver("127.0.0.1", 8080);
+    auto receiver = std::make_unique<SocketReceiver>("127.0.0.1", 8080);
+    auto transmitter = std::make_unique<SocketTransmitter>("127.0.0.1", 8080);
+    auto logger = std::make_unique<ConsoleLogger>();
+    auto timeService = std::make_unique<ChronoTimeService>();
+
+    PrimaryNode node(std::move(receiver), std::move(transmitter),
+                     std::move(logger), std::move(timeService));
 
     std::cout << "Setup done!" << std::endl;
 
-    transmitter.Transmit(10);
-    std::optional<ExperimentMessage> receivedMessageContainer =
-        receiver.Receive();
-
-    if (!receivedMessageContainer.has_value()) {
-        std::cout << "No message received" << std::endl;
-    } else {
-        ExperimentMessage msg = receivedMessageContainer.value();
-        std::cout << "Received message: " << msg << std::endl;
-    }
+    node.Transmit(10);
+    node.LogResults();
 
     std::cout << "Starting cleanup..." << std::endl;
     std::cout << "Cleanup done!" << std::endl;
