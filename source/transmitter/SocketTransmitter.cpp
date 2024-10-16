@@ -2,6 +2,7 @@
 
 #include <sys/socket.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <string>
 
@@ -15,6 +16,7 @@ SocketTransmitter::SocketTransmitter(const std::string& ipAddr, uint16_t port) {
     }
 
     sockaddr_in serverAddr;
+    memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(port);
     serverAddr.sin_addr.s_addr = inet_addr(ipAddr.c_str());
