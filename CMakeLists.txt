@@ -14,6 +14,7 @@ add_library(
     ${PROJECT_SOURCE_DIR}/source/queue/ThreadSafeQueue.cpp
     ${PROJECT_SOURCE_DIR}/source/receiver/InterThreadReceiver.cpp
     ${PROJECT_SOURCE_DIR}/source/transmitter/InterThreadTransmitter.cpp
+    ${PROJECT_SOURCE_DIR}/source/transmitter/SocketTransmitter.cpp
 )
 
 add_executable(
