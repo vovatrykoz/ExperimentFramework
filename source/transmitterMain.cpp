@@ -90,7 +90,13 @@ std::unique_ptr<IPrimaryNodeConfigurator> getConfiguratorForProtocol(
 
 std::optional<SupportedProtocols> stringToProtocol(
     const std::string& protocolName) {
-    if (protocolName == "UDP") {
+    std::string protocolNameLowerCase = "";
+
+    for (char ch : protocolName) {
+        protocolNameLowerCase += std::tolower(ch);
+    }
+    
+    if (protocolName == "udp") {
         return SupportedProtocols::UDP;
     }
 
