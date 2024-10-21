@@ -3,6 +3,9 @@
 
 #include <ctime>
 
+/**
+ * Generic interface for an object that can return current time
+ */
 class ITimeService {
 public:
     virtual ~ITimeService() = default;

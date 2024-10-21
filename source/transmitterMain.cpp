@@ -42,6 +42,8 @@ int main(void) {
 
     std::optional<SupportedProtocols> protocolContainer = std::nullopt;
 
+    // ask user which protocol to use
+    // loop until the user provides a protocol that we support
     while (true) {
         std::cin >> protocolString;
         protocolContainer = stringToProtocol(protocolString);
@@ -57,15 +59,18 @@ int main(void) {
     }
 
     SupportedProtocols protocolUnderTest = protocolContainer.value();
+    // get the configurator object for the specified protocol
     std::unique_ptr<IPrimaryNodeConfigurator> configurator =
         getConfiguratorForProtocol(protocolUnderTest);
 
     try {
+        // configure the node to work with the protocol the user has provided
         PrimaryNode node = configurator->Configure();
 
         std::cout << "Setup done!" << std::endl;
         int numberOfMessages = -1;
 
+        // how may messsages do we send?
         while (numberOfMessages < 0) {
             std::cout << "How many messages to send: ";
             std::cin >> numberOfMessages;
@@ -82,13 +87,16 @@ int main(void) {
         std::cout << std::unitbuf;
         std::cout << "Sending " << numberOfMessages << " messages" << std::endl;
 
+        // send the messages and listen for them on a separate thread
         node.Transmit(numberOfMessages);
         std::thread receiverThread(receiverLoop, std::ref(node));
 
         std::cout << "Sent!" << std::endl;
 
+        // wait for the user to stop execuion
         receiverThread.join();
 
+        // log experiment results
         std::cout << "Experiment results: " << std::endl;
         node.LogResults();
         std::cout << std::endl;

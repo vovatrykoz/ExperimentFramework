@@ -5,6 +5,9 @@
 
 #include <chrono>
 
+/**
+ * Uses std::chrono to return current time
+ */
 class ChronoTimeService : public ITimeService {
 public:
     virtual std::time_t GetCurrentTime() override;

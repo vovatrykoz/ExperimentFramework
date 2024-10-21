@@ -38,6 +38,8 @@ int main(void) {
 
     std::optional<SupportedProtocols> protocolContainer = std::nullopt;
 
+    // ask user which protocol to use
+    // loop until the user provides a protocol that we support
     while (true) {
         std::cin >> protocolString;
         protocolContainer = stringToProtocol(protocolString);
@@ -53,14 +55,17 @@ int main(void) {
     }
 
     SupportedProtocols protocolUnderTest = protocolContainer.value();
+    // get the configurator object for the specified protocol
     std::unique_ptr<IIntermediateNodeConfigurator> configurator =
         getConfiguratorForProtocol(protocolUnderTest);
 
     try {
+        // configure the node to work with the protocol the user has provided
         IntermediateNode node = configurator->Configure();
 
         std::cout << "Setup done!" << std::endl;
 
+        // run the receiver
         std::thread receiverThread(mainLoop, std::ref(node));
 
         receiverThread.join();
