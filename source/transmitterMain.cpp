@@ -21,16 +21,9 @@ std::unique_ptr<IPrimaryNodeConfigurator> getConfiguratorForProtocol(
 std::optional<SupportedProtocols> stringToProtocol(
     const std::string& protocolName);
 
-void signalHandler(int signum) {
-    std::cout << std::endl << "Shutting down the transmitter" << std::endl;
-    running = false;
-}
-
-void receiverLoop(PrimaryNode& node) {
-    while (running) {
-        node.Receive();
-    }
-}
+int getNumberOfMessagesFromTheUser();
+void receiverLoop(PrimaryNode& node);
+void signalHandler(int signum);
 
 int main(void) {
     std::signal(SIGINT, signalHandler);
@@ -68,20 +61,7 @@ int main(void) {
         PrimaryNode node = configurator->Configure();
 
         std::cout << "Setup done!" << std::endl;
-        int numberOfMessages = -1;
-
-        // how may messsages do we send?
-        while (numberOfMessages < 0) {
-            std::cout << "How many messages to send: ";
-            std::cin >> numberOfMessages;
-
-            if (std::cin.fail()) {
-                std::cout << "Invalid input! The input is not an integer."
-                          << std::endl;
-            } else {
-                break;
-            }
-        }
+        int numberOfMessages = getNumberOfMessagesFromTheUser();
 
         // do not buffer console output
         std::cout << std::unitbuf;
@@ -132,4 +112,34 @@ std::optional<SupportedProtocols> stringToProtocol(
     }
 
     return std::nullopt;
+}
+
+int getNumberOfMessagesFromTheUser() {
+    int numberOfMessages = -1;
+
+    // how may messsages do we send?
+    while (numberOfMessages < 0) {
+        std::cout << "How many messages to send: ";
+        std::cin >> numberOfMessages;
+
+        if (std::cin.fail()) {
+            std::cout << "Invalid input! The input is not an integer."
+                        << std::endl;
+        } else {
+            break;
+        }
+    }
+    
+    return numberOfMessages;
+}
+
+void signalHandler(int signum) {
+    std::cout << std::endl << "Shutting down the transmitter" << std::endl;
+    running = false;
+}
+
+void receiverLoop(PrimaryNode& node) {
+    while (running) {
+        node.Receive();
+    }
 }
