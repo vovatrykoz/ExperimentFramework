@@ -10,6 +10,9 @@ set(PROJECT_SOURCES ${PROJECT_SOURCE_DIR}/source)
 
 add_library(
     ExperimentLibrary
+
+    ${PROJECT_SOURCES}/configurator/IntermediateNodeConfiguratorUdp.cpp
+
     ${PROJECT_SOURCES}/logger/ConsoleLogger.cpp
 
     ${PROJECT_SOURCES}/nodes/IntermediateNode.cpp
@@ -22,8 +25,6 @@ add_library(
 
     ${PROJECT_SOURCES}/transmitter/InterThreadTransmitter.cpp
     ${PROJECT_SOURCES}/transmitter/UdpTransmitter.cpp
-
-    ${PROJECT_SOURCES}/InternalNodeConfigurator.cpp
 )
 
 add_executable(

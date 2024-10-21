@@ -1,15 +1,13 @@
-#ifndef _INTERMEDIATE_NODE_CONFIGURATOR_H_
-#define _INTERMEDIATE_NODE_CONFIGURATOR_H_
+#ifndef _I_INTERMEDIATE_NODE_CONFIGURATOR_H_
+#define _I_INTERMEDIATE_NODE_CONFIGURATOR_H_
 
 #include <string>
-
 #include "nodes/IntermediateNode.h"
 
-class IntermediateNodeConfigurator {
+class IIntermediateNodeConfigurator {
 public:
-    static IntermediateNode ConfigureUDP(
-        const std::string& ipAddressToReceiveFrom, uint32_t portToReceiveOn,
-        const std::string& ipAddressToSendTo, uint32_t portToSendFrom);
+    virtual ~IIntermediateNodeConfigurator() = default;
+    virtual IntermediateNode Configure() = 0;
 };
 
 class ConfigurationException : public std::exception {
