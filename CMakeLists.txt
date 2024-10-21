@@ -10,13 +10,17 @@ include_directories(${PROJECT_SOURCE_DIR}/include/)
 add_library(
     ExperimentLibrary
     ${PROJECT_SOURCE_DIR}/source/logger/ConsoleLogger.cpp
+
     ${PROJECT_SOURCE_DIR}/source/nodes/IntermediateNode.cpp
     ${PROJECT_SOURCE_DIR}/source/nodes/PrimaryNode.cpp
+
     ${PROJECT_SOURCE_DIR}/source/queue/ThreadSafeQueue.cpp
+
     ${PROJECT_SOURCE_DIR}/source/receiver/InterThreadReceiver.cpp
     ${PROJECT_SOURCE_DIR}/source/receiver/SocketReceiver.cpp
+
     ${PROJECT_SOURCE_DIR}/source/transmitter/InterThreadTransmitter.cpp
-    ${PROJECT_SOURCE_DIR}/source/transmitter/SocketTransmitter.cpp
+    ${PROJECT_SOURCE_DIR}/source/transmitter/UdpTransmitter.cpp
 )
 
 add_executable(

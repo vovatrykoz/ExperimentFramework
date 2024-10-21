@@ -8,22 +8,22 @@
 #include <arpa/inet.h>
 #include <string>
 
-class SocketTransmitterException : public std::exception {
+class UdpTransmitterException : public std::exception {
 private:
     const char* message;
 
 public:
-    SocketTransmitterException(const char* msg) : message(msg) {}
+    UdpTransmitterException(const char* msg) : message(msg) {}
     virtual const char* what() const noexcept override { return message; }
 };
 
-class SocketTransmitter : public ITransmitter {
+class UdpTransmitter : public ITransmitter {
 private:
     int socketDescriptor;
     sockaddr_in transmittionAddr;
 public:
-    SocketTransmitter(const std::string& ipAddr, uint16_t port);
-    ~SocketTransmitter() override;
+    UdpTransmitter(const std::string& ipAddr, uint16_t port);
+    ~UdpTransmitter() override;
     virtual void Transmit(ExperimentMessage message) override;
 };
 

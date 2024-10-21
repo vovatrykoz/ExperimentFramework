@@ -1,4 +1,4 @@
-#include "transmitter/SocketTransmitter.h"
+#include "transmitter/UdpTransmitter.h"
 
 #include <sys/socket.h>
 #include <unistd.h>
@@ -6,12 +6,10 @@
 
 #include <string>
 
-#include "transmitter/SocketTransmitter.h"
-
-SocketTransmitter::SocketTransmitter(const std::string& ipAddr, uint16_t port) {
+UdpTransmitter::UdpTransmitter(const std::string& ipAddr, uint16_t port) {
     this->socketDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (this->socketDescriptor < 0) {
-        throw SocketTransmitterException(
+        throw UdpTransmitterException(
             "Could not create a socket transmitter");
     }
 
@@ -23,9 +21,9 @@ SocketTransmitter::SocketTransmitter(const std::string& ipAddr, uint16_t port) {
     this->transmittionAddr = serverAddr;
 }
 
-SocketTransmitter::~SocketTransmitter() { close(this->socketDescriptor); }
+UdpTransmitter::~UdpTransmitter() { close(this->socketDescriptor); }
 
-void SocketTransmitter::Transmit(ExperimentMessage message) {
+void UdpTransmitter::Transmit(ExperimentMessage message) {
     int32_t messageInNetworkOrder = htonl(message);
     int res = sendto(this->socketDescriptor, &messageInNetworkOrder,
            sizeof(messageInNetworkOrder), 0,

@@ -6,7 +6,7 @@
 
 #include "nodes/IntermediateNode.h"
 #include "receiver/SocketReceiver.h"
-#include "transmitter/SocketTransmitter.h"
+#include "transmitter/UdpTransmitter.h"
 
 std::atomic<bool> running(true);
 
@@ -28,7 +28,7 @@ int main(void) {
     std::cout << "Starting setup..." << std::endl;
 
     auto receiver = std::make_unique<SocketReceiver>("127.0.0.1", 8081);
-    auto transmitter = std::make_unique<SocketTransmitter>("127.0.0.1", 8080);
+    auto transmitter = std::make_unique<UdpTransmitter>("127.0.0.1", 8080);
 
     IntermediateNode node(std::move(receiver), std::move(transmitter));
 
