@@ -1,5 +1,6 @@
 #include "nodes/IntermediateNode.h"
 
+#include <iostream>
 #include <stdexcept>
 
 IntermediateNode::IntermediateNode(std::unique_ptr<IReceiver> receiver,
@@ -27,5 +28,11 @@ void IntermediateNode::Run() {
     }
 
     ExperimentMessage message = messageContainer.value();
+    
+    // this print to std out is just to help visualize the process
+    // in real scenario, this needs to be removed to make the time measurements more accurate
+    std::cout << "Message " << message
+              << " received! Forwarding back to the sender" << std::endl;
+
     this->transmitter->Transmit(message);
 }
