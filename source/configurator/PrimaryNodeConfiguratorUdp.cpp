@@ -1,82 +1,46 @@
 #include "configurator/PrimaryNodeConfiguratorUdp.h"
 
 #include <iostream>
+
+#include "ip/IpAddress.h"
 #include "logger/ConsoleLogger.h"
-#include "time/ChronoTimeSerice.h"
 #include "receiver/UdpReceiver.h"
+#include "time/ChronoTimeSerice.h"
 #include "transmitter/UdpTransmitter.h"
 
 PrimaryNodeConfiguratorUdp::PrimaryNodeConfiguratorUdp() {
-    std::string inPort, outPort, logger, timeService;
+    std::string logger, timeService;
 
-    std::cout << "Enter the ip address to receive from: ";
-    std::cin >> this->ipAddressToReceiveFrom;
+    this->ipAddressToReceiveFrom =
+        ReadIpAddress("Enter the ip address to receive from: ");
 
-    while (true) {
-        std::cout
-            << "Enter the port number on which you want to receive the data: ";
-        std::cin >> inPort;
+    this->portToReceiveOn = ReadPortNumber(
+        "Enter the port number on which you want to receive the data: ");
 
-        try {
-            this->portToReceiveOn = std::stoi(inPort);
-            break;
-        } catch (...) {
-            std::cout << "Invalid input, please try again!" << std::endl;
-        }
-    }
+    this->ipAddressToSendTo =
+        ReadIpAddress("Enter the ip address to send to: ");
 
-    std::cout << "Enter the ip address to send to: ";
-    std::cin >> this->ipAddressToSendTo;
+    this->portToSendFrom = ReadPortNumber(
+        "Enter the port number through which you want to send the data: ");
 
-    while (true) {
-        std::cout << "Enter the port number through which you want to send the "
-                     "data: ";
-        std::cin >> outPort;
+    this->loggerType =
+        ReadLoggerType("Enter what kind of logger do you want to use: ");
 
-        try {
-            this->portToSendFrom = std::stoi(outPort);
-            break;
-        } catch (...) {
-            std::cout << "Invalid input, please try again!" << std::endl;
-        }
-    }
-
-    while (true) {
-        std::cout << "Enter what kind of logger do you want to use: ";
-        std::cin >> logger;
-
-        std::optional<LoggerType> loggerTypeContainer = StringToLoggerType(logger);
-        if(loggerTypeContainer.has_value()) {
-            this->loggerType = loggerTypeContainer.value();
-            break;
-        }
-
-        std::cout << "This logger type is not supported" << std::endl;
-    }
-
-    while (true) {
-        std::cout << "Enter what kind of time service do you want to use: ";
-        std::cin >> timeService;
-
-        std::optional<TimeServiceType> timeServiceTypeContainer = StringToTimeServiceType(timeService);
-        if(timeServiceTypeContainer.has_value()) {
-            this->timeServiceType = timeServiceTypeContainer.value();
-            break;
-        }
-
-        std::cout << "This time service type is not supported" << std::endl;
-    }
+    this->timeServiceType = ReadTimeServiceType(
+        "Enter what kind of time service do you want to use: ");
 }
 
 PrimaryNode PrimaryNodeConfiguratorUdp::Configure() {
     try {
-        auto receiver = std::make_unique<UdpReceiver>(this->ipAddressToReceiveFrom, this->portToReceiveOn);
-        auto transmitter = std::make_unique<UdpTransmitter>(this->ipAddressToSendTo, this->portToSendFrom);
+        auto receiver = std::make_unique<UdpReceiver>(
+            this->ipAddressToReceiveFrom, this->portToReceiveOn);
+        auto transmitter = std::make_unique<UdpTransmitter>(
+            this->ipAddressToSendTo, this->portToSendFrom);
         auto logger = GetLoggerFromType(this->loggerType);
         auto timeService = GetTimeServiceFromType(this->timeServiceType);
 
         PrimaryNode node(std::move(receiver), std::move(transmitter),
-                        std::move(logger), std::move(timeService));
+                         std::move(logger), std::move(timeService));
 
         return node;
     } catch (const UdpReceiverException& e) {
@@ -102,16 +66,29 @@ PrimaryNode PrimaryNodeConfiguratorUdp::Configure() {
 
 std::optional<LoggerType> PrimaryNodeConfiguratorUdp::StringToLoggerType(
     const std::string& loggerStr) {
-    if(loggerStr == "console") {
+    std::string loggerStrLowerCase = "";
+
+    for (char ch : loggerStr) {
+        loggerStrLowerCase += std::tolower(ch);
+    }
+
+    if (loggerStrLowerCase == "console") {
         return LoggerType::Console;
     }
 
     return std::nullopt;
 }
 
-std::optional<TimeServiceType> PrimaryNodeConfiguratorUdp::StringToTimeServiceType(
+std::optional<TimeServiceType>
+PrimaryNodeConfiguratorUdp::StringToTimeServiceType(
     const std::string& timeServiceStr) {
-    if(timeServiceStr == "chrono") {
+    std::string timeServiceStrLowerCase = "";
+
+    for (char ch : timeServiceStr) {
+        timeServiceStrLowerCase += std::tolower(ch);
+    }
+
+    if (timeServiceStrLowerCase == "chrono") {
         return TimeServiceType::Chrono;
     }
 
@@ -130,7 +107,8 @@ std::unique_ptr<ILogger> PrimaryNodeConfiguratorUdp::GetLoggerFromType(
     }
 }
 
-std::unique_ptr<ITimeService> PrimaryNodeConfiguratorUdp::GetTimeServiceFromType(
+std::unique_ptr<ITimeService>
+PrimaryNodeConfiguratorUdp::GetTimeServiceFromType(
     TimeServiceType timeServiceType) {
     switch (timeServiceType) {
         case TimeServiceType::Chrono:
@@ -140,4 +118,83 @@ std::unique_ptr<ITimeService> PrimaryNodeConfiguratorUdp::GetTimeServiceFromType
             return nullptr;
             break;
     }
+}
+
+std::string PrimaryNodeConfiguratorUdp::ReadIpAddress(
+    const std::string& prompt) {
+    std::string ip;
+    std::cout << prompt;
+    std::cin >> ip;
+
+    while (true) {
+        if (std::regex_match(ip, ipRegex)) {
+            break;
+        }
+
+        std::cout << "Invalid ip address!" << std::endl;
+        std::cout << prompt;
+        std::cin >> ip;
+    }
+
+    return ip;
+}
+uint32_t PrimaryNodeConfiguratorUdp::ReadPortNumber(const std::string& prompt) {
+    int result = -1;
+
+    while (true) {
+        std::cout << prompt;
+        std::cin >> result;
+
+        if (!std::cin.fail()) {
+            break;
+        }
+
+        std::cout << "Invalid input, please try again!" << std::endl;
+    }
+
+    return result;
+}
+
+LoggerType PrimaryNodeConfiguratorUdp::ReadLoggerType(
+    const std::string& prompt) {
+    std::string logger;
+    LoggerType output;
+
+    while (true) {
+        std::cout << prompt;
+        std::cin >> logger;
+
+        std::optional<LoggerType> loggerTypeContainer =
+            StringToLoggerType(logger);
+        if (loggerTypeContainer.has_value()) {
+            output = loggerTypeContainer.value();
+            break;
+        }
+
+        std::cout << "This logger type is not supported" << std::endl;
+    }
+
+    return output;
+}
+
+TimeServiceType PrimaryNodeConfiguratorUdp::ReadTimeServiceType(
+    const std::string& prompt) {
+    std::string timeService;
+    TimeServiceType output;
+
+    while (true) {
+        std::cout << "Enter what kind of time service do you want to use: ";
+        std::cin >> timeService;
+
+        std::optional<TimeServiceType> timeServiceTypeContainer =
+            StringToTimeServiceType(timeService);
+        if (timeServiceTypeContainer.has_value()) {
+            output = timeServiceTypeContainer.value();
+            break;
+        }
+
+        std::cout << "This time service type is not supported" << std::endl;
+    }
+
+    return output;
 }

@@ -18,6 +18,11 @@ private:
     LoggerType loggerType;
     TimeServiceType timeServiceType;
 
+    std::string ReadIpAddress(const std::string& prompt);
+    uint32_t ReadPortNumber(const std::string& prompt);
+    LoggerType ReadLoggerType(const std::string& prompt);
+    TimeServiceType ReadTimeServiceType(const std::string& prompt);
+
 public:
     PrimaryNodeConfiguratorUdp();
     virtual PrimaryNode Configure() override;
