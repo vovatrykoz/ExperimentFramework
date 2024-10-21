@@ -15,46 +15,19 @@ std::unique_ptr<IIntermediateNodeConfigurator> getConfiguratorForProtocol(
 std::optional<SupportedProtocols> stringToProtocol(
     const std::string& protocolName);
 
-void signalHandler(int signum) {
-    std::cout << std::endl << "Shutting down the receiver" << std::endl;
-    running = false;
-}
-
-void mainLoop(IntermediateNode& node) {
-    while (running) {
-        // to simulate network latency
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        node.Run();
-    }
-}
+SupportedProtocols getProtocolFromUser();
+void signalHandler(int signum);
+void mainLoop(IntermediateNode& node);
 
 int main(void) {
     std::signal(SIGINT, signalHandler);
 
-    std::string protocolString;
-
     std::cout << "Starting setup..." << std::endl;
     std::cout << "Enter which protocol you want to test: ";
 
-    std::optional<SupportedProtocols> protocolContainer = std::nullopt;
+    // find out which protocol the user wants to use
+    SupportedProtocols protocolUnderTest = getProtocolFromUser();
 
-    // ask user which protocol to use
-    // loop until the user provides a protocol that we support
-    while (true) {
-        std::cin >> protocolString;
-        protocolContainer = stringToProtocol(protocolString);
-
-        if (protocolContainer.has_value()) {
-            break;
-        }
-
-        std::cout
-            << "The protocol you entered is not supported, please try again"
-            << std::endl;
-        std::cout << "Enter which protocol you want to test: ";
-    }
-
-    SupportedProtocols protocolUnderTest = protocolContainer.value();
     // get the configurator object for the specified protocol
     std::unique_ptr<IIntermediateNodeConfigurator> configurator =
         getConfiguratorForProtocol(protocolUnderTest);
@@ -99,4 +72,40 @@ std::optional<SupportedProtocols> stringToProtocol(
     }
 
     return std::nullopt;
+}
+
+SupportedProtocols getProtocolFromUser() {
+    std::string protocolString;
+    std::optional<SupportedProtocols> protocolContainer = std::nullopt;
+
+    // ask user which protocol to use
+    // loop until the user provides a protocol that we support
+    while (true) {
+        std::cin >> protocolString;
+        protocolContainer = stringToProtocol(protocolString);
+
+        if (protocolContainer.has_value()) {
+            break;
+        }
+
+        std::cout
+            << "The protocol you entered is not supported, please try again"
+            << std::endl;
+        std::cout << "Enter which protocol you want to test: ";
+    }
+
+    return protocolContainer.value();
+}
+
+void signalHandler(int signum) {
+    std::cout << std::endl << "Shutting down the receiver" << std::endl;
+    running = false;
+}
+
+void mainLoop(IntermediateNode& node) {
+    while (running) {
+        // to simulate network latency
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        node.Run();
+    }
 }
