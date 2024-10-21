@@ -12,6 +12,7 @@ add_library(
     ExperimentLibrary
 
     ${PROJECT_SOURCES}/configurator/IntermediateNodeConfiguratorUdp.cpp
+    ${PROJECT_SOURCES}/configurator/PrimaryNodeConfiguratorUdp.cpp
 
     ${PROJECT_SOURCES}/logger/ConsoleLogger.cpp
 

@@ -4,13 +4,22 @@
 #include <string>
 #include <thread>
 
+#include "SupportedProtocols.h"
+#include "configurator/IPRimaryNodeConfigurator.h"
+#include "configurator/PrimaryNodeConfiguratorUdp.h"
 #include "logger/ConsoleLogger.h"
-#include "time/ChronoTimeSerice.h"
 #include "nodes/PrimaryNode.h"
 #include "receiver/UdpReceiver.h"
+#include "time/ChronoTimeSerice.h"
 #include "transmitter/UdpTransmitter.h"
 
 std::atomic<bool> running(true);
+
+std::unique_ptr<IPrimaryNodeConfigurator> getConfiguratorForProtocol(
+    SupportedProtocols protocol);
+
+std::optional<SupportedProtocols> stringToProtocol(
+    const std::string& protocolName);
 
 void signalHandler(int signum) {
     std::cout << std::endl << "Shutting down the transmitter" << std::endl;
@@ -18,7 +27,7 @@ void signalHandler(int signum) {
 }
 
 void receiverLoop(PrimaryNode& node) {
-    while(running) {
+    while (running) {
         node.Receive();
     }
 }
@@ -26,48 +35,93 @@ void receiverLoop(PrimaryNode& node) {
 int main(void) {
     std::signal(SIGINT, signalHandler);
 
+    std::string protocolString;
+
     std::cout << "Starting setup..." << std::endl;
+    std::cout << "Enter which protocol you want to test: ";
 
-    auto receiver = std::make_unique<UdpReceiver>("127.0.0.1", 8080);
-    auto transmitter = std::make_unique<UdpTransmitter>("127.0.0.1", 8081);
-    auto logger = std::make_unique<ConsoleLogger>();
-    auto timeService = std::make_unique<ChronoTimeService>();
+    std::optional<SupportedProtocols> protocolContainer = std::nullopt;
 
-    PrimaryNode node(std::move(receiver), std::move(transmitter),
-                     std::move(logger), std::move(timeService));
+    while (true) {
+        std::cin >> protocolString;
+        protocolContainer = stringToProtocol(protocolString);
 
-
-    std::cout << "Setup done!" << std::endl;
-
-    int numberOfMessages = -1;
-
-    while(numberOfMessages < 0) {
-        std::cout << "How many messages to send: ";
-        std::cin >> numberOfMessages;
-
-        if (std::cin.fail()) {
-            std::cout << "Invalid input! The input is not an integer." << std::endl;
-        } else {
+        if (protocolContainer.has_value()) {
             break;
         }
+
+        std::cout
+            << "The protocol you entered is not supported, please try again"
+            << std::endl;
+        std::cout << "Enter which protocol you want to test: ";
     }
 
-    std::cout << std::unitbuf;
-    std::cout << "Sending " << numberOfMessages << " messages" << std::endl;
+    SupportedProtocols protocolUnderTest = protocolContainer.value();
+    std::unique_ptr<IPrimaryNodeConfigurator> configurator =
+        getConfiguratorForProtocol(protocolUnderTest);
 
-    node.Transmit(numberOfMessages);
-    std::thread receiverThread(receiverLoop, std::ref(node));
+    try {
+        PrimaryNode node = configurator->Configure();
 
-    std::cout << "Sent!" << std::endl;
+        std::cout << "Setup done!" << std::endl;
+        int numberOfMessages = -1;
 
-    receiverThread.join();
+        while (numberOfMessages < 0) {
+            std::cout << "How many messages to send: ";
+            std::cin >> numberOfMessages;
 
-    std::cout << "Experiment results: " << std::endl;
-    node.LogResults();
-    std::cout << std::endl;
+            if (std::cin.fail()) {
+                std::cout << "Invalid input! The input is not an integer."
+                          << std::endl;
+            } else {
+                break;
+            }
+        }
 
-    std::cout << "Starting cleanup..." << std::endl;
-    std::cout << "Cleanup done!" << std::endl;
+        // do not buffer console output
+        std::cout << std::unitbuf;
+        std::cout << "Sending " << numberOfMessages << " messages" << std::endl;
 
-    return 0;
+        node.Transmit(numberOfMessages);
+        std::thread receiverThread(receiverLoop, std::ref(node));
+
+        std::cout << "Sent!" << std::endl;
+
+        receiverThread.join();
+
+        std::cout << "Experiment results: " << std::endl;
+        node.LogResults();
+        std::cout << std::endl;
+
+        std::cout << "Starting cleanup..." << std::endl;
+        std::cout << "Cleanup done!" << std::endl;
+
+        return 0;
+    } catch (const PrimaryNodeConfigurationException& e) {
+        std::cout << e.what() << std::endl;
+        return -1;
+    }
+
+    std::cout << "Setup done!" << std::endl;
+}
+
+std::unique_ptr<IPrimaryNodeConfigurator> getConfiguratorForProtocol(
+    SupportedProtocols protocol) {
+    switch (protocol) {
+        case SupportedProtocols::UDP:
+            return std::make_unique<PrimaryNodeConfiguratorUdp>();
+            break;
+        default:
+            return nullptr;
+            break;
+    }
+}
+
+std::optional<SupportedProtocols> stringToProtocol(
+    const std::string& protocolName) {
+    if (protocolName == "UDP") {
+        return SupportedProtocols::UDP;
+    }
+
+    return std::nullopt;
 }

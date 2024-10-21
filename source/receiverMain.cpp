@@ -22,6 +22,7 @@ void signalHandler(int signum) {
 
 void mainLoop(IntermediateNode& node) {
     while (running) {
+        // to simulate network latency
         std::this_thread::sleep_for(std::chrono::seconds(1));
         node.Run();
     }
@@ -68,7 +69,7 @@ int main(void) {
         std::cout << "Cleanup done!" << std::endl;
 
         return 0;
-    } catch (ConfigurationException e) {
+    } catch (const InermediateNodeConfigurationException& e) {
         std::cout << e.what() << std::endl;
         return -1;
     }

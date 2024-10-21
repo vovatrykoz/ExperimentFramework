@@ -10,12 +10,12 @@ public:
     virtual IntermediateNode Configure() = 0;
 };
 
-class ConfigurationException : public std::exception {
+class InermediateNodeConfigurationException : public std::exception {
 private:
     const std::string message;
 
 public:
-    ConfigurationException(const std::string& message) : message(message) {}
+    InermediateNodeConfigurationException(const std::string& message) : message(message) {}
     virtual const char* what() const noexcept override { return message.c_str(); }
 };
 

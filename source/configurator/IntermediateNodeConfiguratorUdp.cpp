@@ -56,12 +56,18 @@ IntermediateNode IntermediateNodeConfiguratorUdp::Configure() {
             "Configuration of the UDP receiver failed for the following "
             "reason: " +
             std::string(e.what());
-        throw ConfigurationException(message);
+        throw InermediateNodeConfigurationException(message);
     } catch (const UdpTransmitterException& e) {
         std::string message =
             "Configuration of the UDP transmitter failed for the following "
             "reason: " +
             std::string(e.what());
-        throw ConfigurationException(message);
+        throw InermediateNodeConfigurationException(message);
+    } catch (const std::invalid_argument& e) {
+        std::string message =
+            "Configuration of the UDP node failed for the following "
+            "reason: " +
+            std::string(e.what());
+        throw InermediateNodeConfigurationException(message);
     }
 }
