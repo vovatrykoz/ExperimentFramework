@@ -2,43 +2,22 @@
 
 #include <iostream>
 
+#include "ip/IpAddress.h"
 #include "receiver/UdpReceiver.h"
 #include "transmitter/UdpTransmitter.h"
 
 IntermediateNodeConfiguratorUdp::IntermediateNodeConfiguratorUdp() {
-    std::string inPort, outPort;
+    this->ipAddressToReceiveFrom =
+        ReadIpAddress("Enter the ip address to receive from: ");
 
-    std::cout << "Enter the ip address to receive from: ";
-    std::cin >> this->ipAddressToReceiveFrom;
+    this->portToReceiveOn = ReadPortNumber(
+        "Enter the port number on which you want to receive the data: ");
 
-    while (true) {
-        std::cout
-            << "Enter the port number on which you want to receive the data: ";
-        std::cin >> inPort;
-
-        try {
-            this->portToReceiveOn = std::stoi(inPort);
-            break;
-        } catch (...) {
-            std::cout << "Invalid input, please try again!" << std::endl;
-        }
-    }
-
-    std::cout << "Enter the ip address to send to: ";
-    std::cin >> this->ipAddressToSendTo;
-
-    while (true) {
-        std::cout << "Enter the port number through which you want to send the "
-                     "data: ";
-        std::cin >> outPort;
-
-        try {
-            this->portToSendFrom = std::stoi(outPort);
-            break;
-        } catch (...) {
-            std::cout << "Invalid input, please try again!" << std::endl;
-        }
-    }
+    this->ipAddressToSendTo =
+        ReadIpAddress("Enter the ip address to send to: ");
+        
+    this->portToSendFrom = ReadPortNumber(
+        "Enter the port number through which you want to send the data: ");
 }
 
 IntermediateNode IntermediateNodeConfiguratorUdp::Configure() {
@@ -70,4 +49,40 @@ IntermediateNode IntermediateNodeConfiguratorUdp::Configure() {
             std::string(e.what());
         throw InermediateNodeConfigurationException(message);
     }
+}
+
+std::string IntermediateNodeConfiguratorUdp::ReadIpAddress(
+    const std::string& prompt) {
+    std::string ip;
+    std::cout << prompt;
+    std::cin >> ip;
+
+    while (true) {
+        if (std::regex_match(ip, ipRegex)) {
+            break;
+        }
+
+        std::cout << "Invalid ip address!" << std::endl;
+        std::cout << prompt;
+        std::cin >> ip;
+    }
+
+    return ip;
+}
+uint32_t IntermediateNodeConfiguratorUdp::ReadPortNumber(
+    const std::string& prompt) {
+    int result = -1;
+
+    while (true) {
+        std::cout << prompt;
+        std::cin >> result;
+
+        if (!std::cin.fail()) {
+            break;
+        }
+
+        std::cout << "Invalid input, please try again!" << std::endl;
+    }
+
+    return result;
 }
