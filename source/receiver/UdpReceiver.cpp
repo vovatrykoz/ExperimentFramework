@@ -1,16 +1,17 @@
 #include "receiver/UdpReceiver.h"
 
+#include <fcntl.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 #include <iostream>
 
 UdpReceiver::UdpReceiver(const std::string& ipAddr, uint16_t port) {
     this->socketDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (this->socketDescriptor < 0) {
-        throw SocketReceiverException("Could not create a socket descriptor for a UDP receiver");
+        throw SocketReceiverException(
+            "Could not create a socket descriptor for a UDP receiver");
     }
 
     int flags = fcntl(this->socketDescriptor, F_GETFL, 0);
@@ -21,7 +22,8 @@ UdpReceiver::UdpReceiver(const std::string& ipAddr, uint16_t port) {
 
     if (fcntl(this->socketDescriptor, F_SETFL, flags | O_NONBLOCK) < 0) {
         close(this->socketDescriptor);
-        throw SocketReceiverException("Could not set flags for a UDP socket");
+        throw SocketReceiverException(
+            "Could not create a non-blocking UDP socket");
     }
 
     struct sockaddr_in serverAddr;
@@ -54,6 +56,6 @@ std::optional<ExperimentMessage> UdpReceiver::Receive() {
     if (recvLen < 0) {
         return std::nullopt;
     }
-    
+
     return ntohl(messageInNetworkOrder);
 }
