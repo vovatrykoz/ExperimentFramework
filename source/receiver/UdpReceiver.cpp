@@ -1,4 +1,4 @@
-#include "receiver/SocketReceiver.h"
+#include "receiver/UdpReceiver.h"
 
 #include <string.h>
 #include <sys/socket.h>
@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-SocketReceiver::SocketReceiver(const std::string& ipAddr, uint16_t port) {
+UdpReceiver::UdpReceiver(const std::string& ipAddr, uint16_t port) {
     this->socketDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (this->socketDescriptor < 0) {
         throw SocketReceiverException("Could not create a socket receiver");
@@ -41,9 +41,9 @@ SocketReceiver::SocketReceiver(const std::string& ipAddr, uint16_t port) {
     }
 }
 
-SocketReceiver::~SocketReceiver() { close(this->socketDescriptor); }
+UdpReceiver::~UdpReceiver() { close(this->socketDescriptor); }
 
-std::optional<ExperimentMessage> SocketReceiver::Receive() {
+std::optional<ExperimentMessage> UdpReceiver::Receive() {
     int32_t messageInNetworkOrder;
     struct sockaddr_in clientAddr;
     socklen_t clientAddrLen = sizeof(clientAddr);

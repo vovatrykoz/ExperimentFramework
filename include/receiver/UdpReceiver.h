@@ -17,14 +17,14 @@ public:
 };
 
 
-class SocketReceiver : public IReceiver {
+class UdpReceiver : public IReceiver {
 private:
     int socketDescriptor;
     sockaddr_in transmitterAddr;
 
 public:
-    SocketReceiver(const std::string& ipAddr, uint16_t port);
-    ~SocketReceiver();
+    UdpReceiver(const std::string& ipAddr, uint16_t port);
+    ~UdpReceiver();
     virtual std::optional<ExperimentMessage> Receive() override;
 };
 
