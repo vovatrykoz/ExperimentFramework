@@ -10,19 +10,19 @@
 UdpReceiver::UdpReceiver(const std::string& ipAddr, uint16_t port) {
     this->socketDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (this->socketDescriptor < 0) {
-        throw SocketReceiverException(
+        throw UdpReceiverException(
             "Could not create a socket descriptor for a UDP receiver");
     }
 
     int flags = fcntl(this->socketDescriptor, F_GETFL, 0);
     if (flags < 0) {
         close(this->socketDescriptor);
-        throw SocketReceiverException("Could not get flags for a UDP socket");
+        throw UdpReceiverException("Could not get flags for a UDP socket");
     }
 
     if (fcntl(this->socketDescriptor, F_SETFL, flags | O_NONBLOCK) < 0) {
         close(this->socketDescriptor);
-        throw SocketReceiverException(
+        throw UdpReceiverException(
             "Could not create a non-blocking UDP socket");
     }
 
@@ -39,7 +39,7 @@ UdpReceiver::UdpReceiver(const std::string& ipAddr, uint16_t port) {
 
     if (bindResult < 0) {
         close(this->socketDescriptor);
-        throw SocketReceiverException("Could not bind a UDP socket");
+        throw UdpReceiverException("Could not bind a UDP socket");
     }
 }
 

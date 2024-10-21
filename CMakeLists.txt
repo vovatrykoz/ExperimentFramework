@@ -6,31 +6,34 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include/)
+set(PROJECT_SOURCES ${PROJECT_SOURCE_DIR}/source)
 
 add_library(
     ExperimentLibrary
-    ${PROJECT_SOURCE_DIR}/source/logger/ConsoleLogger.cpp
+    ${PROJECT_SOURCES}/logger/ConsoleLogger.cpp
 
-    ${PROJECT_SOURCE_DIR}/source/nodes/IntermediateNode.cpp
-    ${PROJECT_SOURCE_DIR}/source/nodes/PrimaryNode.cpp
+    ${PROJECT_SOURCES}/nodes/IntermediateNode.cpp
+    ${PROJECT_SOURCES}/nodes/PrimaryNode.cpp
 
-    ${PROJECT_SOURCE_DIR}/source/queue/ThreadSafeQueue.cpp
+    ${PROJECT_SOURCES}/queue/ThreadSafeQueue.cpp
 
-    ${PROJECT_SOURCE_DIR}/source/receiver/InterThreadReceiver.cpp
-    ${PROJECT_SOURCE_DIR}/source/receiver/UdpReceiver.cpp
+    ${PROJECT_SOURCES}/receiver/InterThreadReceiver.cpp
+    ${PROJECT_SOURCES}/receiver/UdpReceiver.cpp
 
-    ${PROJECT_SOURCE_DIR}/source/transmitter/InterThreadTransmitter.cpp
-    ${PROJECT_SOURCE_DIR}/source/transmitter/UdpTransmitter.cpp
+    ${PROJECT_SOURCES}/transmitter/InterThreadTransmitter.cpp
+    ${PROJECT_SOURCES}/transmitter/UdpTransmitter.cpp
+
+    ${PROJECT_SOURCES}/InternalNodeConfigurator.cpp
 )
 
 add_executable(
     TransmitterRunner
-    ${PROJECT_SOURCE_DIR}/source/transmitterMain.cpp
+    ${PROJECT_SOURCES}/transmitterMain.cpp
 )
 
 add_executable(
     ReceiverRunner
-    ${PROJECT_SOURCE_DIR}/source/receiverMain.cpp
+    ${PROJECT_SOURCES}/receiverMain.cpp
 )
 
 target_link_libraries(TransmitterRunner ExperimentLibrary)

@@ -7,16 +7,6 @@
 
 #include "IReceiver.h"
 
-class SocketReceiverException : public std::exception {
-private:
-    const char* message;
-
-public:
-    SocketReceiverException(const char* msg) : message(msg) {}
-    virtual const char* what() const noexcept override { return message; }
-};
-
-
 class UdpReceiver : public IReceiver {
 private:
     int socketDescriptor;
@@ -26,6 +16,16 @@ public:
     UdpReceiver(const std::string& ipAddr, uint16_t port);
     ~UdpReceiver();
     virtual std::optional<ExperimentMessage> Receive() override;
+};
+
+
+class UdpReceiverException : public std::exception {
+private:
+    const std::string message;
+
+public:
+    UdpReceiverException(const std::string& message) : message(message) {}
+    virtual const char* what() const noexcept override { return message.c_str(); }
 };
 
 #endif

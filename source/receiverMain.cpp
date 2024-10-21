@@ -4,9 +4,7 @@
 #include <string>
 #include <thread>
 
-#include "nodes/IntermediateNode.h"
-#include "receiver/UdpReceiver.h"
-#include "transmitter/UdpTransmitter.h"
+#include "InternalNodeConfigurator.h"
 
 std::atomic<bool> running(true);
 
@@ -16,7 +14,7 @@ void signalHandler(int signum) {
 }
 
 void mainLoop(IntermediateNode& node) {
-    while(running) {
+    while (running) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         node.Run();
     }
@@ -27,19 +25,22 @@ int main(void) {
 
     std::cout << "Starting setup..." << std::endl;
 
-    auto receiver = std::make_unique<UdpReceiver>("127.0.0.1", 8081);
-    auto transmitter = std::make_unique<UdpTransmitter>("127.0.0.1", 8080);
+    try {
+        IntermediateNode node = IntermediateNodeConfigurator::ConfigureUDP(
+            "127.0.0.1", 8081, "127.0.0.1", 8080);
 
-    IntermediateNode node(std::move(receiver), std::move(transmitter));
+        std::cout << "Setup done!" << std::endl;
 
-    std::cout << "Setup done!" << std::endl;
+        std::thread receiverThread(mainLoop, std::ref(node));
 
-    std::thread receiverThread(mainLoop, std::ref(node));
+        receiverThread.join();
 
-    receiverThread.join();
+        std::cout << "Starting cleanup..." << std::endl;
+        std::cout << "Cleanup done!" << std::endl;
 
-    std::cout << "Starting cleanup..." << std::endl;
-    std::cout << "Cleanup done!" << std::endl;
-
-    return 0;
+        return 0;
+    } catch (ConfigurationException e) {
+        std::cout << e.what() << std::endl;
+        return -1;
+    }
 }
