@@ -10,7 +10,7 @@ UdpTransmitter::UdpTransmitter(const std::string& ipAddr, uint16_t port) {
     this->socketDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (this->socketDescriptor < 0) {
         throw UdpTransmitterException(
-            "Could not create a socket transmitter");
+            "Could not create a UDP socket");
     }
 
     sockaddr_in serverAddr;
