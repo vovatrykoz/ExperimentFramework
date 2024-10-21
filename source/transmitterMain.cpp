@@ -21,6 +21,7 @@ std::unique_ptr<IPrimaryNodeConfigurator> getConfiguratorForProtocol(
 std::optional<SupportedProtocols> stringToProtocol(
     const std::string& protocolName);
 
+SupportedProtocols getProtocolFromUser();
 int getNumberOfMessagesFromTheUser();
 void receiverLoop(PrimaryNode& node);
 void signalHandler(int signum);
@@ -28,30 +29,12 @@ void signalHandler(int signum);
 int main(void) {
     std::signal(SIGINT, signalHandler);
 
-    std::string protocolString;
-
     std::cout << "Starting setup..." << std::endl;
     std::cout << "Enter which protocol you want to test: ";
 
-    std::optional<SupportedProtocols> protocolContainer = std::nullopt;
+    // find out which protocol the user wants to use
+    SupportedProtocols protocolUnderTest = getProtocolFromUser();
 
-    // ask user which protocol to use
-    // loop until the user provides a protocol that we support
-    while (true) {
-        std::cin >> protocolString;
-        protocolContainer = stringToProtocol(protocolString);
-
-        if (protocolContainer.has_value()) {
-            break;
-        }
-
-        std::cout
-            << "The protocol you entered is not supported, please try again"
-            << std::endl;
-        std::cout << "Enter which protocol you want to test: ";
-    }
-
-    SupportedProtocols protocolUnderTest = protocolContainer.value();
     // get the configurator object for the specified protocol
     std::unique_ptr<IPrimaryNodeConfigurator> configurator =
         getConfiguratorForProtocol(protocolUnderTest);
@@ -112,6 +95,29 @@ std::optional<SupportedProtocols> stringToProtocol(
     }
 
     return std::nullopt;
+}
+
+SupportedProtocols getProtocolFromUser() {
+    std::string protocolString;
+    std::optional<SupportedProtocols> protocolContainer = std::nullopt;
+
+    // ask user which protocol to use
+    // loop until the user provides a protocol that we support
+    while (true) {
+        std::cin >> protocolString;
+        protocolContainer = stringToProtocol(protocolString);
+
+        if (protocolContainer.has_value()) {
+            break;
+        }
+
+        std::cout
+            << "The protocol you entered is not supported, please try again"
+            << std::endl;
+        std::cout << "Enter which protocol you want to test: ";
+    }
+
+    return protocolContainer.value();
 }
 
 int getNumberOfMessagesFromTheUser() {
