@@ -73,7 +73,7 @@ std::optional<SupportedProtocols> stringToProtocol(
         protocolNameLowerCase += std::tolower(ch);
     }
     
-    if (protocolName == "udp") {
+    if (protocolNameLowerCase == "udp") {
         return SupportedProtocols::UDP;
     }
 
