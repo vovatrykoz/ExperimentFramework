@@ -32,25 +32,37 @@ int main(void) {
     std::unique_ptr<IIntermediateNodeConfigurator> configurator =
         getConfiguratorForProtocol(protocolUnderTest);
 
+    // create an empty container for the node
+    // this trickery is done to avoid wrapping the code that will execute the
+    // benchmarking code in a try-catch block. Doing so can create a preformance
+    // penalty, even if no exceptions are thrown, thus distorting the final
+    // results.
+    std::optional<IntermediateNode> nodeContainer = std::nullopt;
+
+    // with this approach, only the configuration part needs to be wrapped in a
+    // try-catch block
     try {
         // configure the node to work with the protocol the user has provided
-        IntermediateNode node = configurator->Configure();
-
-        std::cout << "Setup done!" << std::endl;
-
-        // run the receiver
-        std::thread receiverThread(mainLoop, std::ref(node));
-
-        receiverThread.join();
-
-        std::cout << "Starting cleanup..." << std::endl;
-        std::cout << "Cleanup done!" << std::endl;
-
-        return 0;
+        // and place the configured node inside the container created above
+        nodeContainer = configurator->Configure();
     } catch (const InermediateNodeConfigurationException& e) {
         std::cout << e.what() << std::endl;
         return -1;
     }
+
+    // move the configured node outside of the std::optional container
+    IntermediateNode node = std::move(nodeContainer.value());
+    std::cout << "Setup done!" << std::endl;
+
+    // run the receiver
+    std::thread receiverThread(mainLoop, std::ref(node));
+
+    receiverThread.join();
+
+    std::cout << "Starting cleanup..." << std::endl;
+    std::cout << "Cleanup done!" << std::endl;
+
+    return 0;
 }
 
 std::unique_ptr<IIntermediateNodeConfigurator> getConfiguratorForProtocol(
@@ -72,7 +84,7 @@ std::optional<SupportedProtocols> stringToProtocol(
     for (char ch : protocolName) {
         protocolNameLowerCase += std::tolower(ch);
     }
-    
+
     if (protocolNameLowerCase == "udp") {
         return SupportedProtocols::UDP;
     }

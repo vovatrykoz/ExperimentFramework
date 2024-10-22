@@ -39,41 +39,52 @@ int main(void) {
     std::unique_ptr<IPrimaryNodeConfigurator> configurator =
         getConfiguratorForProtocol(protocolUnderTest);
 
+    // create an empty container for the node
+    // this trickery is done to avoid wrapping the code that will execute the
+    // benchmarking code in a try-catch block. Doing so can create a preformance
+    // penalty, even if no exceptions are thrown, thus distorting the final
+    // results.
+    std::optional<PrimaryNode> nodeContainer = std::nullopt; 
+
+    // with this approach, only the configuration part needs to be wrapped in a
+    // try-catch block
     try {
         // configure the node to work with the protocol the user has provided
-        PrimaryNode node = configurator->Configure();
-
-        std::cout << "Setup done!" << std::endl;
-        int numberOfMessages = getNumberOfMessagesFromTheUser();
-
-        // do not buffer console output
-        std::cout << std::unitbuf;
-        std::cout << "Sending " << numberOfMessages << " messages" << std::endl;
-
-        // send the messages and listen for them on a separate thread
-        node.Transmit(numberOfMessages);
-        std::thread receiverThread(receiverLoop, std::ref(node));
-
-        std::cout << "Sent!" << std::endl;
-
-        // wait for the user to stop execuion
-        receiverThread.join();
-
-        // log experiment results
-        std::cout << "Experiment results: " << std::endl;
-        node.LogResults();
-        std::cout << std::endl;
-
-        std::cout << "Starting cleanup..." << std::endl;
-        std::cout << "Cleanup done!" << std::endl;
-
-        return 0;
+        // and place the configured node inside the container created above
+        nodeContainer = configurator->Configure();
     } catch (const PrimaryNodeConfigurationException& e) {
         std::cout << e.what() << std::endl;
         return -1;
     }
 
+    // move the configured node outside of the std::optional container
+    PrimaryNode node = std::move(nodeContainer.value());
+
     std::cout << "Setup done!" << std::endl;
+    int numberOfMessages = getNumberOfMessagesFromTheUser();
+
+    // do not buffer console output
+    std::cout << std::unitbuf;
+    std::cout << "Sending " << numberOfMessages << " messages" << std::endl;
+
+    // send the messages and listen for them on a separate thread
+    node.Transmit(numberOfMessages);
+    std::thread receiverThread(receiverLoop, std::ref(node));
+
+    std::cout << "Sent!" << std::endl;
+
+    // wait for the user to stop execuion
+    receiverThread.join();
+
+    // log experiment results
+    std::cout << "Experiment results: " << std::endl;
+    node.LogResults();
+    std::cout << std::endl;
+
+    std::cout << "Starting cleanup..." << std::endl;
+    std::cout << "Cleanup done!" << std::endl;
+
+    return 0;
 }
 
 std::unique_ptr<IPrimaryNodeConfigurator> getConfiguratorForProtocol(
