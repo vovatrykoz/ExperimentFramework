@@ -10,6 +10,10 @@
  */
 class ChronoTimeService : public ITimeService {
 public:
+
+    /**
+     * Returns current time using std::chrono
+     */
     virtual std::time_t GetCurrentTime() override;
 };
 

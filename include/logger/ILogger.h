@@ -22,6 +22,9 @@ public:
 
     /**
      * Log all of the recorded round trip times
+     * 
+     * @param recordedTimes A list of the roundtrip times paired with message
+     * ids
      */
     virtual void LogRoundTripTimes(
         const std::list<RoundTripInfo>& recordedTimes) = 0;

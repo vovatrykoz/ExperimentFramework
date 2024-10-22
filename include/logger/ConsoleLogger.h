@@ -10,6 +10,9 @@ class ConsoleLogger : public ILogger {
 public:
     /**
      * Log roundtrip times to console
+     *
+     * @param recordedTimes A list of the roundtrip times paired with message
+     * ids
      */
     virtual void LogRoundTripTimes(
         const std::list<RoundTripInfo>& recordedTimes) override;

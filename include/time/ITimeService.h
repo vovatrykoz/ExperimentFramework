@@ -9,6 +9,10 @@
 class ITimeService {
 public:
     virtual ~ITimeService() = default;
+
+    /**
+     * Returns current time
+     */
     virtual std::time_t GetCurrentTime() = 0;
 };
 

@@ -29,7 +29,7 @@ private:
         trackedMessages;  // used to store timestamps of messages that were sent
                           // into the network
 
-    std::list<RoundTripInfo> recordedTimes; // results of the experiment
+    std::list<RoundTripInfo> recordedTimes;  // results of the experiment
 
 public:
     PrimaryNode(std::unique_ptr<IReceiver> receiver,
@@ -42,6 +42,8 @@ public:
      *
      * Before a message is sent, a timestamp is taken and saved internally
      * together with the message.
+     *
+     * @param numberOfMessages How many messages to transmit
      */
     void Transmit(uint32_t numberOfMessages);
 

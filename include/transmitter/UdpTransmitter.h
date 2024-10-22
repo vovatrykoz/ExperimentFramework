@@ -22,6 +22,8 @@ public:
 
     /**
      * Transmits provided message using the UDP protocol
+     * 
+     * @param message A message that should be transmitted
      */
     virtual void Transmit(ExperimentMessage message) override;
 };

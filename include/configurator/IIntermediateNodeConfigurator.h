@@ -19,6 +19,9 @@ public:
     virtual IntermediateNode Configure() = 0;
 };
 
+/**
+ * An exception that can be thrown if the configuration fails
+ */
 class InermediateNodeConfigurationException : public std::exception {
 private:
     const std::string message;
@@ -26,6 +29,8 @@ private:
 public:
     InermediateNodeConfigurationException(const std::string& message)
         : message(message) {}
+
+    // a message that describes the cause of the exception
     virtual const char* what() const noexcept override {
         return message.c_str();
     }
