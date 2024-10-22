@@ -68,8 +68,8 @@ int main(void) {
     std::cout << "Sending " << numberOfMessages << " messages" << std::endl;
 
     // send the messages and listen for them on a separate thread
-    node.Transmit(numberOfMessages);
     std::thread receiverThread(receiverLoop, std::ref(node));
+    node.Transmit(numberOfMessages);
 
     std::cout << "Sent!" << std::endl;
 
