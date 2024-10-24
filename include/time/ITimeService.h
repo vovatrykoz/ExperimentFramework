@@ -4,16 +4,18 @@
 #include <ctime>
 
 /**
- * Generic interface for an object that can return current time
+ * Generic interface for an object that can be used as a stopwatch
  */
-class ITimeService {
+class IStopwatch {
 public:
-    virtual ~ITimeService() = default;
+    virtual ~IStopwatch() = default;
 
     /**
-     * Returns current time
+     * Starts the stopwatch
      */
-    virtual std::time_t GetCurrentTime() = 0;
+    virtual void Start() = 0;
+    virtual void Stop() = 0;
+    virtual std::chrono::nanoseconds ElapsedTime() = 0;
 };
 
 #endif

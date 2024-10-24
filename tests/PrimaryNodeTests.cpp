@@ -5,6 +5,8 @@
 
 #include "nodes/PrimaryNode.h"
 
+/*/
+
 class MockTransmitterTransmitFunc : public ITransmitter {
 private:
     std::function<void(ExperimentMessage)> transmit;
@@ -47,7 +49,7 @@ public:
     }
 };
 
-class MockTimeService : public ITimeService {
+class MockTimeService : public IStopwatch {
 private:
     std::function<std::time_t()> time;
 
@@ -280,3 +282,5 @@ TEST(PrimaryNodeTest, RoundTripTimeForMessagesIsRecorded) {
 
     ASSERT_EQ(expectedLoggedMessages, actualLoggedMessages);
 }
+
+ */

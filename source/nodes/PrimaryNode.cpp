@@ -5,7 +5,7 @@
 PrimaryNode::PrimaryNode(std::unique_ptr<IReceiver> receiver,
                          std::unique_ptr<ITransmitter> transmitter,
                          std::unique_ptr<ILogger> logger,
-                         std::unique_ptr<ITimeService> timeService) {
+                         std::unique_ptr<IStopwatch> timeService) {
     if (receiver == nullptr) {
         throw std::invalid_argument(
             "Invalid argument: the receiver must not be null");
@@ -29,25 +29,24 @@ PrimaryNode::PrimaryNode(std::unique_ptr<IReceiver> receiver,
     this->receiver = std::move(receiver);
     this->transmitter = std::move(transmitter);
     this->logger = std::move(logger);
-    this->timeService = std::move(timeService);
+    this->stopwatch = std::move(timeService);
 }
 
 void PrimaryNode::Run(uint32_t numberOfMessages) {
     for (uint32_t i = 0; i < numberOfMessages; i++) {
-        std::time_t messageSentTimestamp = this->timeService->GetCurrentTime();
+        this->stopwatch->Start();
         this->transmitter->Transmit(i);
 
-        // Continuously attempt to receive a message until successful
         std::optional<ExperimentMessage> resultContainer;
         std::time_t messageReceivedTimestamp;
 
         do {
             resultContainer = this->receiver->Receive();
-            messageReceivedTimestamp = this->timeService->GetCurrentTime();
         } while (!resultContainer.has_value());
+        this->stopwatch->Stop();
 
         ExperimentMessage result = resultContainer.value();
-        std::time_t roundTripTime = messageReceivedTimestamp - messageSentTimestamp;
-        this->recordedTimes.push_back({result, roundTripTime});
+        auto elapsedTime = this->stopwatch->ElapsedTime();
+        this->recordedTimes.push_back({result, elapsedTime});
     }
 }

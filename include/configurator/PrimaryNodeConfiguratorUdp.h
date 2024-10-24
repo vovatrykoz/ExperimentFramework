@@ -116,7 +116,7 @@ public:
      * implementation was found. If no matching implementation was found, a
      * nullptr will be returned instead
      */
-    static std::unique_ptr<ITimeService> GetTimeServiceFromType(
+    static std::unique_ptr<IStopwatch> GetTimeServiceFromType(
         TimeServiceType timeServiceType);
 };
 

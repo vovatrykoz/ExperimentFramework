@@ -107,7 +107,7 @@ std::unique_ptr<ILogger> PrimaryNodeConfiguratorUdp::GetLoggerFromType(
     }
 }
 
-std::unique_ptr<ITimeService>
+std::unique_ptr<IStopwatch>
 PrimaryNodeConfiguratorUdp::GetTimeServiceFromType(
     TimeServiceType timeServiceType) {
     switch (timeServiceType) {

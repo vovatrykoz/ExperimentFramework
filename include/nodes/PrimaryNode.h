@@ -23,7 +23,7 @@ private:
     std::unique_ptr<IReceiver> receiver;        // used to receive messages
     std::unique_ptr<ITransmitter> transmitter;  // used to send messages
     std::unique_ptr<ILogger> logger;  // used to log the experiment results
-    std::unique_ptr<ITimeService> timeService;  // used to create timestamps
+    std::unique_ptr<IStopwatch> stopwatch;  // used to create timestamps
 
     std::unordered_map<ExperimentMessage, std::time_t>
         trackedMessages;  // used to store timestamps of messages that were sent
@@ -35,7 +35,7 @@ public:
     PrimaryNode(std::unique_ptr<IReceiver> receiver,
                 std::unique_ptr<ITransmitter> transmitter,
                 std::unique_ptr<ILogger> logger,
-                std::unique_ptr<ITimeService> timeService);
+                std::unique_ptr<IStopwatch> timeService);
 
     /**
      * Run the specified number of iterations
