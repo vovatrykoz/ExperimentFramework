@@ -67,14 +67,9 @@ int main(void) {
     std::cout << std::unitbuf;
     std::cout << "Sending " << numberOfMessages << " messages" << std::endl;
 
-    // send the messages and listen for them on a separate thread
-    std::thread receiverThread(receiverLoop, std::ref(node));
-    node.Transmit(numberOfMessages);
+    node.Run(numberOfMessages);
 
     std::cout << "Sent!" << std::endl;
-
-    // wait for the user to stop execuion
-    receiverThread.join();
 
     // log experiment results
     std::cout << "Experiment results: " << std::endl;
@@ -159,10 +154,4 @@ int getNumberOfMessagesFromTheUser() {
 void signalHandler(int signum) {
     std::cout << std::endl << "Shutting down the transmitter" << std::endl;
     running = false;
-}
-
-void receiverLoop(PrimaryNode& node) {
-    while (running) {
-        node.Receive();
-    }
 }

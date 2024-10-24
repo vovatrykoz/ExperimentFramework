@@ -115,7 +115,7 @@ TEST(PrimaryNodeTest, CanTransmitSeveralMessages) {
     PrimaryNode node(std::move(mockReceiver), std::move(mockTransmitter),
                      std::move(mockLogger), std::move(mockTimeService));
 
-    node.Transmit(numberOfMessagesToTransmit);
+    node.Run(numberOfMessagesToTransmit);
 
     std::vector<ExperimentMessage> expectedTransmittedMessages;
 
@@ -154,11 +154,7 @@ TEST(PrimaryNodeTest, CanReceiveSeveralMessages) {
         expectedReceivedMessages.push_back(i);
     }
 
-    node.Transmit(numberOfMessagesToReceive);
-
-    for (int i = 0; i < numberOfMessagesToReceive; i++) {
-        node.Receive();
-    }
+    node.Run(numberOfMessagesToReceive);
 
     ASSERT_EQ(expectedReceivedMessages, actualReceivedMessages);
 }
@@ -187,15 +183,11 @@ TEST(PrimaryNodeTest, AllReceivedMessagesAreLogged) {
     PrimaryNode node(std::move(mockReceiver), std::move(mockTransmitter),
                      std::move(mockLogger), std::move(mockTimeService));
 
-    node.Transmit(numberOfMessagesToReceive);
+    node.Run(numberOfMessagesToReceive);
 
     std::vector<RoundTripInfo> expectedLoggedMessages;
     for (int i = 0; i < numberOfMessagesToReceive; i++) {
         expectedLoggedMessages.push_back(RoundTripInfo{i, 0});
-    }
-
-    for (int i = 0; i < numberOfMessagesToReceive; i++) {
-        node.Receive();
     }
 
     node.LogResults();
@@ -228,7 +220,7 @@ TEST(PrimaryNodeTest, NotingIsLoggedIfWeDoNotReceiveMessages) {
                      std::move(mockLogger), std::move(mockTimeService));
 
     for (int i = 0; i < numberOfMessagesToReceive; i++) {
-        node.Receive();
+        node.Run(numberOfMessagesToReceive);
     }
 
     node.LogResults();
@@ -278,10 +270,10 @@ TEST(PrimaryNodeTest, RoundTripTimeForMessagesIsRecorded) {
             RoundTripInfo{i, i + numberOfMessagesToTransmitAndReceive});
     }
 
-    node.Transmit(numberOfMessagesToTransmitAndReceive);
+    node.Run(numberOfMessagesToTransmitAndReceive);
 
     for (int i = 0; i < numberOfMessagesToTransmitAndReceive; i++) {
-        node.Receive();
+        node.Run(numberOfMessagesToTransmitAndReceive);
     }
 
     node.LogResults();

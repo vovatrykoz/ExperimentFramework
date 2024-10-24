@@ -32,30 +32,22 @@ PrimaryNode::PrimaryNode(std::unique_ptr<IReceiver> receiver,
     this->timeService = std::move(timeService);
 }
 
-void PrimaryNode::Transmit(uint32_t numberOfMessages) {
+void PrimaryNode::Run(uint32_t numberOfMessages) {
     for (uint32_t i = 0; i < numberOfMessages; i++) {
-        this->trackedMessages[i] = this->timeService->GetCurrentTime();
+        std::time_t messageSentTimestamp = this->timeService->GetCurrentTime();
         this->transmitter->Transmit(i);
+
+        // Continuously attempt to receive a message until successful
+        std::optional<ExperimentMessage> resultContainer;
+        std::time_t messageReceivedTimestamp;
+
+        do {
+            resultContainer = this->receiver->Receive();
+            messageReceivedTimestamp = this->timeService->GetCurrentTime();
+        } while (!resultContainer.has_value());
+
+        ExperimentMessage result = resultContainer.value();
+        std::time_t roundTripTime = messageReceivedTimestamp - messageSentTimestamp;
+        this->recordedTimes.push_back({result, roundTripTime});
     }
-}
-
-void PrimaryNode::Receive() {
-    std::optional<ExperimentMessage> resultContainer =
-        this->receiver->Receive();
-    std::time_t messageReceivedTimestamp = this->timeService->GetCurrentTime();
-
-    if (!resultContainer.has_value()) {
-        return;
-    }
-
-    ExperimentMessage result = resultContainer.value();
-    auto trackedMessageIt = this->trackedMessages.find(result);
-
-    if (trackedMessageIt == this->trackedMessages.end()) {
-        return;
-    }
-
-    std::time_t sendTimestamp = trackedMessageIt->second;
-    std::time_t roundTripTime = messageReceivedTimestamp - sendTimestamp;
-    this->recordedTimes.push_back({result, roundTripTime});
 }

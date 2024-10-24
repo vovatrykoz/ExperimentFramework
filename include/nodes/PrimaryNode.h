@@ -38,24 +38,11 @@ public:
                 std::unique_ptr<ITimeService> timeService);
 
     /**
-     * Transmit a specified amount of messages using the injected transmitter.
-     *
-     * Before a message is sent, a timestamp is taken and saved internally
-     * together with the message.
+     * Run the specified number of iterations
      *
      * @param numberOfMessages How many messages to transmit
      */
-    void Transmit(uint32_t numberOfMessages);
-
-    /**
-     * Receive messages using the injected receiver.
-     *
-     * Once a message is received, the class will look up the timestamp when the
-     * message was sent. It will then calculate the roundtrip time and store the
-     * resuts internally. The results can be accessed through the LogResults()
-     * method
-     */
-    void Receive();
+    void Run(uint32_t numberOfMessages);
 
     /**
      * Log the experiment results using the injected logger
