@@ -3,7 +3,6 @@
 
 #include <list>
 #include <memory>
-#include <unordered_map>
 
 #include "logger/ILogger.h"
 #include "receiver/IReceiver.h"
@@ -24,10 +23,6 @@ private:
     std::unique_ptr<ITransmitter> transmitter;  // used to send messages
     std::unique_ptr<ILogger> logger;  // used to log the experiment results
     std::unique_ptr<IStopwatch> stopwatch;  // used to create timestamps
-
-    std::unordered_map<ExperimentMessage, std::time_t>
-        trackedMessages;  // used to store timestamps of messages that were sent
-                          // into the network
 
     std::list<RoundTripInfo> recordedTimes;  // results of the experiment
 
