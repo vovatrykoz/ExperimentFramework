@@ -1,4 +1,4 @@
-#ifdef __linux__
+
 
 #include "receiver/UdpReceiver.h"
 
@@ -62,4 +62,4 @@ std::optional<ExperimentMessage> UdpReceiver::Receive() {
     return ntohl(messageInNetworkOrder);
 }
 
-#endif // __linux__
+

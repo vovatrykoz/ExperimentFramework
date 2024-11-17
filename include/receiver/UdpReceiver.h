@@ -1,4 +1,4 @@
-#ifdef __linux__
+
 
 #ifndef _SOCKET_RECEIVER_H_
 #define _SOCKET_RECEIVER_H_
@@ -43,4 +43,4 @@ public:
 
 #endif // _SOCKET_RECEIVER_H_
 
-#endif // __linux__
+

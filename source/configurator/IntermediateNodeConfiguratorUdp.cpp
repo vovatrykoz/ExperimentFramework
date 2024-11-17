@@ -1,4 +1,4 @@
-#ifdef __linux__
+
 
 #include "configurator/IntermediateNodeConfiguratorUdp.h"
 
@@ -89,4 +89,4 @@ uint32_t IntermediateNodeConfiguratorUdp::ReadPortNumber(
     return result;
 }
 
-#endif // __linux__
+

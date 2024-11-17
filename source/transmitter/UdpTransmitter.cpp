@@ -1,4 +1,4 @@
-#ifdef __linux__
+
 
 #include "transmitter/UdpTransmitter.h"
 
@@ -45,4 +45,3 @@ void UdpTransmitter::Transmit(ExperimentMessage message) {
                      sizeof(this->transmittionAddr));
 }
 
-#endif // __linux__

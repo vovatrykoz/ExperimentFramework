@@ -1,4 +1,4 @@
-#ifdef __linux__
+
 
 #ifndef _PRIMARY_NODE_CONFIGURATOR_UDP_H_
 #define _PRIMARY_NODE_CONFIGURATOR_UDP_H_
@@ -124,4 +124,4 @@ public:
 
 #endif
 
-#endif // __linux__
+
