@@ -1,3 +1,5 @@
+#ifdef __linux__
+
 #include "configurator/PrimaryNodeConfiguratorUdp.h"
 
 #include <iostream>
@@ -198,3 +200,5 @@ TimeServiceType PrimaryNodeConfiguratorUdp::ReadTimeServiceType(
 
     return output;
 }
+
+#endif // __linux__
