@@ -25,9 +25,6 @@ PrimaryNodeConfiguratorUdp::PrimaryNodeConfiguratorUdp() {
     this->portToSendFrom = ReadPortNumber(
         "Enter the port number through which you want to send the data: ");
 
-    this->loggerType =
-        ReadLoggerType("Enter what kind of logger do you want to use: ");
-
     this->timeServiceType = ReadTimeServiceType(
         "Enter what kind of time service do you want to use: ");
 }
@@ -38,11 +35,10 @@ PrimaryNode PrimaryNodeConfiguratorUdp::Configure() {
             this->ipAddressToReceiveFrom, this->portToReceiveOn);
         auto transmitter = std::make_unique<UdpTransmitter>(
             this->ipAddressToSendTo, this->portToSendFrom);
-        auto logger = GetLoggerFromType(this->loggerType);
         auto timeService = GetTimeServiceFromType(this->timeServiceType);
 
         PrimaryNode node(std::move(receiver), std::move(transmitter),
-                         std::move(logger), std::move(timeService));
+                         std::move(timeService));
 
         return node;
     } catch (const UdpReceiverException& e) {
@@ -109,8 +105,7 @@ std::unique_ptr<ILogger> PrimaryNodeConfiguratorUdp::GetLoggerFromType(
     }
 }
 
-std::unique_ptr<IStopwatch>
-PrimaryNodeConfiguratorUdp::GetTimeServiceFromType(
+std::unique_ptr<IStopwatch> PrimaryNodeConfiguratorUdp::GetTimeServiceFromType(
     TimeServiceType timeServiceType) {
     switch (timeServiceType) {
         case TimeServiceType::Chrono:
@@ -200,4 +195,3 @@ TimeServiceType PrimaryNodeConfiguratorUdp::ReadTimeServiceType(
 
     return output;
 }
-

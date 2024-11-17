@@ -28,6 +28,7 @@ void signalHandler(int signum);
 
 int main(void) {
     std::signal(SIGINT, signalHandler);
+    ConsoleLogger logger;
 
     std::cout << "Starting setup..." << std::endl;
     std::cout << "Enter which protocol you want to test: ";
@@ -73,7 +74,7 @@ int main(void) {
 
     // log experiment results
     std::cout << "Experiment results: " << std::endl;
-    node.LogResults();
+    logger.LogRoundTripTimes(node.Results());
     std::cout << std::endl;
 
     std::cout << "Starting cleanup..." << std::endl;
