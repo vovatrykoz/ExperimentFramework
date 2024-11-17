@@ -5,6 +5,8 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
     cmake_policy(SET CMP0135 NEW)
 endif()
 
+set(CMAKE_CXX_STANDARD 17)
+
 include_directories(${PROJECT_SOURCE_DIR}/include/)
 set(PROJECT_SOURCES ${PROJECT_SOURCE_DIR}/source)
 
