@@ -21,7 +21,6 @@ class PrimaryNode {
 private:
     std::unique_ptr<IReceiver> receiver;        // used to receive messages
     std::unique_ptr<ITransmitter> transmitter;  // used to send messages
-    std::unique_ptr<ILogger> logger;  // used to log the experiment results
     std::unique_ptr<IStopwatch> stopwatch;  // used to create timestamps
 
     std::list<RoundTripInfo> recordedTimes;  // results of the experiment
@@ -29,7 +28,6 @@ private:
 public:
     PrimaryNode(std::unique_ptr<IReceiver> receiver,
                 std::unique_ptr<ITransmitter> transmitter,
-                std::unique_ptr<ILogger> logger,
                 std::unique_ptr<IStopwatch> timeService);
 
     /**
@@ -39,14 +37,11 @@ public:
      */
     void Run(uint32_t numberOfMessages);
 
-    /**
-     * Log the experiment results using the injected logger
-     */
-    void LogResults();
+    const std::list<RoundTripInfo>& Results() const;
 };
 
-inline void PrimaryNode::LogResults() {
-    this->logger->LogRoundTripTimes(this->recordedTimes);
+inline const std::list<RoundTripInfo>& PrimaryNode::Results() const {
+    return this->recordedTimes;
 }
 
 #endif

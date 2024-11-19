@@ -5,7 +5,7 @@
 
 #include "nodes/PrimaryNode.h"
 
-/*/
+/*
 
 class MockTransmitterTransmitFunc : public ITransmitter {
 private:

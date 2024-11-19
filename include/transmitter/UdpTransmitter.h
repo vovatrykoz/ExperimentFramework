@@ -1,3 +1,5 @@
+
+
 #ifndef _SOCKET_TRANSMITTER_H_
 #define _SOCKET_TRANSMITTER_H_
 
@@ -39,4 +41,6 @@ public:
     }
 };
 
-#endif
+#endif // _SOCKET_TRANSMITTER_H_
+
+

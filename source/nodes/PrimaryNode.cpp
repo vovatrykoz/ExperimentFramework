@@ -4,7 +4,6 @@
 
 PrimaryNode::PrimaryNode(std::unique_ptr<IReceiver> receiver,
                          std::unique_ptr<ITransmitter> transmitter,
-                         std::unique_ptr<ILogger> logger,
                          std::unique_ptr<IStopwatch> timeService) {
     if (receiver == nullptr) {
         throw std::invalid_argument(
@@ -16,11 +15,6 @@ PrimaryNode::PrimaryNode(std::unique_ptr<IReceiver> receiver,
             "Invalid argument: the transmitter must not be null");
     }
 
-    if (logger == nullptr) {
-        throw std::invalid_argument(
-            "Invalid argument: the logger must not be null");
-    }
-
     if (timeService == nullptr) {
         throw std::invalid_argument(
             "Invalid argument: the logger must not be null");
@@ -28,7 +22,6 @@ PrimaryNode::PrimaryNode(std::unique_ptr<IReceiver> receiver,
 
     this->receiver = std::move(receiver);
     this->transmitter = std::move(transmitter);
-    this->logger = std::move(logger);
     this->stopwatch = std::move(timeService);
 }
 

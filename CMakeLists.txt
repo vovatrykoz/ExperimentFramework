@@ -5,11 +5,13 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
     cmake_policy(SET CMP0135 NEW)
 endif()
 
+set(CMAKE_CXX_STANDARD 17)
+
 include_directories(${PROJECT_SOURCE_DIR}/include/)
 set(PROJECT_SOURCES ${PROJECT_SOURCE_DIR}/source)
 
 add_library(
-    ExperimentLibrary
+    RttFramework
 
     ${PROJECT_SOURCES}/configurator/IntermediateNodeConfiguratorUdp.cpp
     ${PROJECT_SOURCES}/configurator/PrimaryNodeConfiguratorUdp.cpp
@@ -38,8 +40,8 @@ add_executable(
     ${PROJECT_SOURCES}/receiverMain.cpp
 )
 
-target_link_libraries(TransmitterRunner ExperimentLibrary)
-target_link_libraries(ReceiverRunner ExperimentLibrary)
+target_link_libraries(TransmitterRunner RttFramework)
+target_link_libraries(ReceiverRunner RttFramework)
 
 set(UNIT_TESTS_DIR ${PROJECT_SOURCE_DIR}/tests)
 
@@ -63,7 +65,7 @@ add_executable(
 )
 target_link_libraries(
     testRunner
-    ExperimentLibrary
+    RttFramework
     GTest::gtest_main
 )
 
