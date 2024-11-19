@@ -8,7 +8,7 @@ typedef int MessageId;
 
 struct RoundTripInfo {
     MessageId id;
-    std::chrono::nanoseconds roundTripTime;
+    std::chrono::milliseconds roundTripTime;
 
     bool operator==(const RoundTripInfo& other) const { return id == other.id; }
 };

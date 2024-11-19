@@ -23,7 +23,6 @@ std::optional<SupportedProtocols> stringToProtocol(
 
 SupportedProtocols getProtocolFromUser();
 int getNumberOfMessagesFromTheUser();
-void receiverLoop(PrimaryNode& node);
 void signalHandler(int signum);
 
 int main(void) {
