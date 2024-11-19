@@ -40,6 +40,7 @@ void PrimaryNode::Run(uint32_t numberOfMessages) {
 
         ExperimentMessage result = resultContainer.value();
         auto elapsedTime = this->stopwatch->ElapsedTime();
-        this->recordedTimes.push_back({result, elapsedTime});
+        auto elapsedTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime);
+        this->recordedTimes.push_back({result, elapsedTimeMs});
     }
 }
